@@ -26,7 +26,7 @@ func main() {
 					Usage:   "set the pdex endpoint",
 					Action: func(c *cli.Context) error {
 						if c.Args().First() == "" {
-							fmt.Fprint(os.Stderr, "Error: Please entry the url. ¥n")
+							fmt.Fprint(os.Stderr, "Error: Please entry the url. \n")
 							os.Exit(1)
 						}
 						configuration.CreateConfig()
