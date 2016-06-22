@@ -6,7 +6,7 @@ import (
 	"github.com/urfave/cli"
 	"gopkg.in/resty.v0"
 
-	"./conf"
+//	"./conf"
 )
 
 func main() {
@@ -29,11 +29,11 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Please entry the url. \n")
 							os.Exit(1)
 						}
-						configuration.CreateConfig()
-						conf := &configuration.Config{
+						CreateConfig()
+						conf := &Config{
 							URL: c.Args().First(),
 						}
-						configuration.WriteConfig(conf)
+						WriteConfig(conf)
 						fmt.Fprint(os.Stdout, "Success: register url config \n")
 						return nil
 					},
