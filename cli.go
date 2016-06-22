@@ -5,7 +5,7 @@ import (
 	"os"
 	"github.com/urfave/cli"
 	"gopkg.in/resty.v0"
-	"github.com/claymodel/conf"
+	"github.com/plathome/pdex-cli/conf"
 )
 
 func main() {
@@ -28,11 +28,11 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Please entry the url. \n")
 							os.Exit(1)
 						}
-						CreateConfig()
-						conf := &Config{
+						configuration.CreateConfig()
+						conf := &configuration.Config{
 							URL: c.Args().First(),
 						}
-						WriteConfig(conf)
+						configuration.WriteConfig(conf)
 						fmt.Fprint(os.Stdout, "Success: register url config \n")
 						return nil
 					},
