@@ -5,8 +5,7 @@ import (
 	"os"
 	"github.com/urfave/cli"
 	"gopkg.in/resty.v0"
-
-//	"./conf"
+	"github.com/claymodel/conf"
 )
 
 func main() {
