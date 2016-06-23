@@ -49,8 +49,14 @@ func main() {
 					Aliases: []string{"p"},
 					Usage:   "util ping",
 					Action: func(c *cli.Context) error {
-						checkPing()
-						return nil
+					conf, err := configuration.ReadConfig()
+					if err != nil {
+						fmt.Fprint(os.Stderr, "Error: Failed read config. \n Require [config] command first. \n")
+						os.Exit(1)
+					}
+					checkPing()
+					pd := &configuration.Pdex{C: c}
+					return nil
 					},
 				},
 				{
