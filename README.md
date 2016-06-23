@@ -50,7 +50,7 @@ docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w
 docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o pdex'
 ```
 
-# Build for different OS Architecture
+# Build for different OS Architectures
 
 *MAC Build*
 ```
