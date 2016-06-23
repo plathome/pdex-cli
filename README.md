@@ -1,17 +1,17 @@
 # pdex-cli
 
-The Go version of the pdexchange cli tool
+pdex : The Go version of the pdexchange cli tool
 
 *Grab Latest Release*
 
 executable file attached
 
 ```
-curl -L https://github.com/plathome/pdex-cli/releases/download/#{tag#}/pdex-cli.sh > /usr/local/bin/pdex-cli
+curl -L https://github.com/plathome/pdex-cli/releases/download/#{tag#}/pdex-`uname -s`-`uname -m` > /usr/local/bin/pdex
 ```
 
 ```
-chmod +x /usr/local/bin/pdex-cli
+chmod +x /usr/local/bin/pdex
 ```
 
 
@@ -47,44 +47,44 @@ docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w
 # Building
 
 ```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o pdex-cli'
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o pdex'
 ```
 
 # Build for different OS Architecture
 
-* MAC Build *
+*MAC Build*
 ```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=darwin GOARCH=386 go build -v -o pdex-cli-darwin-386'
-```
-
-```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=darwin GOARCH=amd64 go build -v -o pdex-cli-darwin-amd64'
-```
-
-* Linux Build *
-
-```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=386 go build -v -o pdex-cli-linux-386'
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=darwin GOARCH=386 go build -v -o pdex-Darwin-x86'
 ```
 
 ```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=amd64 go build -v -o pdex-cli-linux-amd64'
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=darwin GOARCH=amd64 go build -v -o pdex-Darwin-x86_64'
+```
+
+*Linux Build*
+
+```
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=386 go build -v -o pdex-Linux-x86'
 ```
 
 ```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=arm go build -v -o pdex-cli-linux-arm'
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=amd64 go build -v -o pdex-Linux-x86_64'
 ```
 
 ```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=arm64 go build -v -o pdex-cli-linux-arm64'
-```
-
-* Windows Build *
-
-```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=windows GOARCH=386 go build -v -o pdex-cli-windows-386.exe'
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=arm go build -v -o pdex-Linux-arm'
 ```
 
 ```
-docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=windows GOARCH=amd64 go build -v -o pdex-cli-windows-amd64.exe'
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=linux GOARCH=arm64 go build -v -o pdex-Linux-arm64'
+```
+
+*Windows Build*
+
+```
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=windows GOARCH=386 go build -v -o pdex-Windows-x86.exe'
+```
+
+```
+docker run --rm -it -v "$GOPATH":/gopath -v "$(pwd)":/app -e "GOPATH=/gopath" -w /app docker/go sh -c 'env GOOS=windows GOARCH=amd64 go build -v -o pdex-Windows-x86_64.exe'
 ```
