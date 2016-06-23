@@ -10,8 +10,8 @@ import (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "pdcli"
-	app.Usage = "the cli for pd-exchange"
+	app.Name = "pdex-cli"
+	app.Usage = "The cli tool for pd-exchange"
 	app.Version = "0.0.1"
 	app.Commands = []cli.Command {
 		{
