@@ -24,7 +24,7 @@ The consideration: Release target date 30/06/2016
 1. Create devices
 1. Create channels
 1. Messages, Commands transmission
- * Ability to send messages using device info
- * Ability to send commands using channel info
- * Ability to read messages using channel info, app info
- * Ability to read commands using device info
+ 1. Ability to send messages using device info
+ 2. Ability to send commands using channel info
+ 3. Ability to read messages using channel info, app info
+ 4. Ability to read commands using device info
