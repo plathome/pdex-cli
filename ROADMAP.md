@@ -13,78 +13,65 @@ This tool comprises of the following flexibilities,i.e.,
 - simple interfacing
 - stable
 
-## PDExchange API Interaction from pdex cli is simple
+## Roadmap
 
-*Authentication CLIs*
+*Target version 1.0.0*
 
-- pdex auth token create
+1. Environment Setting Configuration
+			Release target date 24/06/2016
+1.1 listing up the configuration
+1.2 editing the configuration
 
-- pdex auth token update
-- pdex auth secret update
+2. Authentication to PDExchange
+			Release target date 24/06/2016
+2.1 list up credentials
+2.2 modify the credentials
 
+3. Self Settings
+			Release target date 24/06/2016
+3.1 list up self info
+3.2 modify or delete self
 
-*Application CLIs*
-
-- pdex apps list
-- pdex apps app_id
-- pdex apps app_id channels
-- pdex apps app_id messages list
-- pdex apps app_id messages latest
-- pdex apps app_id messages msg_id
-
-- pdex apps create
-- pdex apps update app_id
-
-
-*Channel CLIs*
-
-- pdex channels channel_id messages list
-- pdex channels channel_id messages msg_id
-- pdex channels channel_id messages latest
-
-- pdex channels add
-- pdex channels channel_id command
-
-- pdex channels channel_id remove
+4. utilities
+			Release target date 24/06/2016
+4.1 ping the pdexchange
+4.2 show pdexchange version
+4.3 show pdexchange changelog
+4.4 create the hmac
 
 
-*Devicegroups CLIs*
+5. Device Groups
+			Release target date 27/06/2016
+5.1 create new device group
+5.2 list up device groups
+5.3 modify device groups
 
-- pdex devicegroups list
-- pdex devicegroups deid_prefix
-- pdex devicegroups deid_prefix devices list
+6. Devices
+			Release target date 27/06/2016
+6.1 create new device id
+6.2 list up device ids
 
-- pdex devicegroups add
-- pdex devicegroups deid_prefix new
+7. Application
+			Release target date 27/06/2016
+7.1 create new app
+7.2 update app info
+7.3 listup apps
 
+8. Channels
+			Release target date 27/06/2016
+8.1 create new channel
+8.2 update channel info
+8.3 listup channels
 
-*Devicegroups CLIs*
-
-- pdex devices de_id list
-- pdex devices de_id channels
-- pdex pdex devices de_id commands
-- devices de_id commands cmd_id
-
-- pdex devices de_id message
-
-*Self CLIs*
-
-- pdex show me
-- pdex delete me
-
-- pdex setup
-- pdex users
-
-*Utils CLIs*
-
-- pdex utils ping
-- pdex utils version
-- pdex utils access_token
-- pdex utils secret_token de_id
-- pdex utils app_token channel_id
-- pdex utils setup
-- pdex utils pdexadm
-- pdex utils changelog
-
-- pdex utils hmac
-- pdex utils secret_token
+9. Messages, Commands transmission
+			Release target date 27/06/2016
+9.1 sending command using channel info
+	channel send command
+9.2 read command from channel/app using device info
+	device read command
+9.3 sending message using device info
+	device send message
+9.4 read message from device using channel info
+	channel read message
+9.5 read message from device using app info
+	app read message
