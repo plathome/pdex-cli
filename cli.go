@@ -49,7 +49,7 @@ func main() {
 					Aliases: []string{"p"},
 					Usage:   "util ping",
 					Action: func(c *cli.Context) error {
-						checkPing()
+						CheckPing()
 						return nil
 					},
 				},
@@ -58,7 +58,7 @@ func main() {
 					Aliases: []string{"v"},
 					Usage:   "util version",
 					Action: func(c *cli.Context) error {
-						checkVersion()
+						CheckVersion()
 						return nil
 					},
 				},
@@ -67,7 +67,7 @@ func main() {
 					Aliases: []string{"c"},
 					Usage:   "util changelog",
 					Action: func(c *cli.Context) error {
-						checkChangeLog()
+						CheckChangeLog()
 						return nil
 					},
 				},
@@ -78,38 +78,26 @@ func main() {
 	app.Run(os.Args)
 }
 
-func checkPing() {
+func CheckPing() {
 	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/ping")
 	if err != nil {
 		fmt.Printf("\nError: %v", err)
 	}
-	fmt.Printf("Response Status Code: %v", resp.StatusCode())
-	fmt.Printf("\nResponse Status: %v", resp.Status())
-	fmt.Printf("\nResponse Time: %v", resp.Time())
-	fmt.Printf("\nResponse Recevied At: %v", resp.ReceivedAt())
-	fmt.Printf("\nResponse Body: %v\n", resp)
+	fmt.Printf("%v\n", resp)
 }
 
-func checkVersion() {
+func CheckVersion() {
 	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/version")
 	if err != nil {
 		fmt.Printf("\nError: %v", err)
 	}
-	fmt.Printf("Response Status Code: %v", resp.StatusCode())
-	fmt.Printf("\nResponse Status: %v", resp.Status())
-	fmt.Printf("\nResponse Time: %v", resp.Time())
-	fmt.Printf("\nResponse Recevied At: %v", resp.ReceivedAt())
-	fmt.Printf("\nResponse Body: %v\n", resp)
+	fmt.Printf("%v\n", resp)
 }
 
-func checkChangeLog() {
+func CheckChangeLog() {
 	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/changelog")
 	if err != nil {
 		fmt.Printf("\nError: %v", err)
 	}
-	fmt.Printf("Response Status Code: %v", resp.StatusCode())
-	fmt.Printf("\nResponse Status: %v", resp.Status())
-	fmt.Printf("\nResponse Time: %v", resp.Time())
-	fmt.Printf("\nResponse Recevied At: %v", resp.ReceivedAt())
-	fmt.Printf("\nResponse Body: %v\n", resp)
+	fmt.Printf("%v\n", resp)
 }
