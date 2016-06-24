@@ -49,7 +49,16 @@ func main() {
 					Aliases: []string{"p"},
 					Usage:   "util ping",
 					Action: func(c *cli.Context) error {
-						CheckPing()
+						conf, err := configuration.ReadConfig()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reding config file. \n")
+							os.Exit(1)
+						}
+
+						configuration.Url
+
+						fmt.Print(result)
+//						CheckPing(conf)
 						return nil
 					},
 				},
@@ -73,13 +82,39 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:    "device",
+			Aliases: []string{"d"},
+			Usage:   "pdcli device",
+			Subcommands: []cli.Command{
+				{
+					Name:    "sendmsg",
+					Aliases: []string{"s"},
+					Usage:   "device send",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the url. \n")
+							os.Exit(1)
+						}
+						conf, err := configuration.ReadConfig()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						fmt.Printf("\n%v", conf)
+						//DeviceSendMessage(c.Args().First())
+						return nil
+					},
+				},
+			},
+		},
 	}
 
 	app.Run(os.Args)
 }
 
-func CheckPing() {
-	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/ping")
+func CheckPing(url string) {
+	resp, err := resty.R().Get(url + "/api/v1/utils/ping")
 	if err != nil {
 		fmt.Printf("\nError: %v", err)
 	}
@@ -100,4 +135,31 @@ func CheckChangeLog() {
 		fmt.Printf("\nError: %v", err)
 	}
 	fmt.Printf("%v\n", resp)
+}
+
+func DeviceSendMessage(conf string) {
+	// resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/changelog")
+	// if err != nil {
+	// 	fmt.Printf("\nError: %v", err)
+	// }
+	// fmt.Printf("%v\n", resp)
+	fmt.Printf("\n%v\n",conf)
+}
+
+func ReadMessageByApp() {
+	// resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/changelog")
+	// if err != nil {
+	// 	fmt.Printf("\nError: %v", err)
+	// }
+	// fmt.Printf("%v\n", resp)
+	fmt.Printf("%v\n","MessageByAppInfo")
+}
+
+func ReadMessageByChannel() {
+	// resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/changelog")
+	// if err != nil {
+	// 	fmt.Printf("\nError: %v", err)
+	// }
+	// fmt.Printf("%v\n", resp)
+	fmt.Printf("%v\n","ReadMessageByChannel")
 }

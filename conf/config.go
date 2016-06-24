@@ -11,6 +11,10 @@ type Config struct {
 	URL string `json:"url"`
 }
 
+type Url struct {
+	C *Config
+}
+
 var (
 	h            = os.Getenv("HOME")
 	confDirName  = ".pdex_cli"
