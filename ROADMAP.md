@@ -28,4 +28,4 @@ The consideration: Release target date 30/06/2016
 1. Ability to send commands using channel info
 1. Ability to read commands using device info
 1. Ability to read latest command
-1. Ability to list up Profiles
+1. Ability to manage Profiles
