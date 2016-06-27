@@ -51,16 +51,12 @@ func main() {
 					Aliases: []string{"p"},
 					Usage:   "util ping",
 					Action: func(c *cli.Context) error {
-						// conf, err := configuration.ReadConfig()
-						// if err != nil {
-						// 	fmt.Fprint(os.Stderr, "Error: Failed reding config file. \n")
-						// 	os.Exit(1)
-						// }
-
-						//configuration.Url
-
-						//fmt.Print(result)
-//						CheckPing(conf)
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						CheckPing(conf.PdexUrl)
 						return nil
 					},
 				},
@@ -69,7 +65,12 @@ func main() {
 					Aliases: []string{"v"},
 					Usage:   "util version",
 					Action: func(c *cli.Context) error {
-						CheckVersion()
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						CheckVersion(conf.PdexUrl)
 						return nil
 					},
 				},
@@ -78,7 +79,12 @@ func main() {
 					Aliases: []string{"c"},
 					Usage:   "util changelog",
 					Action: func(c *cli.Context) error {
-						CheckChangeLog()
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						CheckChangeLog(conf.PdexUrl)
 						return nil
 					},
 				},
@@ -124,16 +130,16 @@ func CheckPing(url string) {
 	fmt.Printf("%v\n", resp)
 }
 
-func CheckVersion() {
-	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/version")
+func CheckVersion(url string) {
+	resp, err := resty.R().Get(url + "/api/v1/utils/version")
 	if err != nil {
 		fmt.Printf("\nError: %v", err)
 	}
 	fmt.Printf("%v\n", resp)
 }
 
-func CheckChangeLog() {
-	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/changelog")
+func CheckChangeLog(url string) {
+	resp, err := resty.R().Get(url + "/api/v1/utils/changelog")
 	if err != nil {
 		fmt.Printf("\nError: %v", err)
 	}
