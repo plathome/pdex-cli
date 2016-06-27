@@ -4,9 +4,17 @@ import (
 	"fmt"
 	"os"
 	"github.com/urfave/cli"
-	"gopkg.in/resty.v0"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"encoding/json"
 	"github.com/plathome/pdex-cli/conf"
+	"strings"
 )
+
+type DigestString struct {
+	digest string
+}
 
 func main() {
 	app := cli.NewApp()
@@ -29,10 +37,11 @@ func main() {
 							os.Exit(1)
 						}
 						configuration.CreateConfig()
-						conf := &configuration.Config{
-							URL: c.Args().First(),
+						confs := &configuration.ConfigFile{
+							PdexUrl: c.Args().First(),
+							AccessKey: c.Args().Get(1),
 						}
-						configuration.WriteConfig(conf)
+						configuration.WriteConfigs(confs)
 						fmt.Fprint(os.Stdout, "Success: register url config \n")
 						return nil
 					},
@@ -49,7 +58,12 @@ func main() {
 					Aliases: []string{"p"},
 					Usage:   "util ping",
 					Action: func(c *cli.Context) error {
-						CheckPing()
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						GetUtils(conf.PdexUrl,"/api/v1/utils/ping")
 						return nil
 					},
 				},
@@ -58,7 +72,12 @@ func main() {
 					Aliases: []string{"v"},
 					Usage:   "util version",
 					Action: func(c *cli.Context) error {
-						CheckVersion()
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						GetUtils(conf.PdexUrl,"/api/v1/utils/version")
 						return nil
 					},
 				},
@@ -67,37 +86,148 @@ func main() {
 					Aliases: []string{"c"},
 					Usage:   "util changelog",
 					Action: func(c *cli.Context) error {
-						CheckChangeLog()
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						GetUtils(conf.PdexUrl,"/api/v1/utils/changelog")
+						return nil
+					},
+				},
+				{
+					Name:    "hmac",
+					Aliases: []string{"c"},
+					Usage:   "util hmac",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the key and deid. \n")
+							os.Exit(1)
+						}
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						HmacDigest(conf.PdexUrl, c.Args().First(), c.Args().Get(1))
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:    "device",
+			Aliases: []string{"d"},
+			Usage:   "pdcli device",
+			Subcommands: []cli.Command{
+				{
+					Name:    "sendmsg",
+					Aliases: []string{"s"},
+					Usage:   "device send",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the key, deid and message \n")
+							os.Exit(1)
+						}
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						DeviceSendMessage(conf.PdexUrl, c.Args().First(), c.Args().Get(1), c.Args().Get(2))
 						return nil
 					},
 				},
 			},
 		},
 	}
-
 	app.Run(os.Args)
 }
 
-func CheckPing() {
-	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/ping")
-	if err != nil {
-		fmt.Printf("\nError: %v", err)
-	}
-	fmt.Printf("%v\n", resp)
+func HmacDigest(urlstr string, secretkey string, deid string) {
+	Hmac(urlstr, []string{"key","message"} , []string{secretkey,deid} )
 }
 
-func CheckVersion() {
-	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/version")
-	if err != nil {
-		fmt.Printf("\nError: %v", err)
-	}
-	fmt.Printf("%v\n", resp)
+func Hmac(link string, parameters []string, values []string) (body string, err error) {
+   data := url.Values{}
+   for i := range parameters {
+      data.Set(parameters[i], values[i])
+   }
+   resp, err := http.PostForm(link + "/api/v1/utils/hmac", data)
+   if err != nil {
+      return "", err
+   }
+   defer resp.Body.Close()
+   htmlData, err := ioutil.ReadAll(resp.Body)
+   if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+    }
+	fmt.Println(string(htmlData))
+    return string(htmlData), nil
 }
 
-func CheckChangeLog() {
-	resp, err := resty.R().Get("http://localhost:9292/api/v1/utils/changelog")
-	if err != nil {
-		fmt.Printf("\nError: %v", err)
-	}
-	fmt.Printf("%v\n", resp)
+func DeviceSendMessage(link string, secretkey string, deid string, message string) (body string, err error) {
+   parameters := []string{"key","message"}
+   values := []string{secretkey,deid}
+   data := url.Values{}
+   for i := range parameters {
+      data.Set(parameters[i], values[i])
+   }
+   resp, err := http.PostForm(link + "/api/v1/utils/hmac", data)
+   if err != nil {
+      return "", err
+   }
+   defer resp.Body.Close()
+   b, _ := ioutil.ReadAll(resp.Body)
+
+   var data2 map[string]interface{}
+   json.Unmarshal(b, &data2)
+
+   digest, _ := data2["digest"].(string)
+   SendMessage(link, deid, digest, message)
+   return string(b), nil
 }
+
+func SendMessage(urlStr string, deid string, digestkey string, message string) {
+	v := url.Values{}
+	v.Add("msg", message)
+	s := v.Encode()
+	req, err := http.NewRequest("POST", urlStr + "/api/v1/devices/" + deid + "/message", strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + digestkey)
+
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("read resp.Body successfully:\n%v\n", string(data))
+}
+
+func GetUtils(urlstr string, utils string) {
+	resp, err := http.Get(urlstr + utils)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	htmlData, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(string(htmlData))
+}
+
