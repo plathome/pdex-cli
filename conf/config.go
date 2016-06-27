@@ -38,6 +38,10 @@ func CreateConfig() (err error) {
 	return
 }
 
+func link() {
+	fmt.Printf("the link")
+}
+
 func ReadConfig() (c *Config, err error) {
 	b, err := ioutil.ReadFile(confPath)
 	if err != nil {

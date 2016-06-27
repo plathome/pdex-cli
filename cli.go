@@ -49,15 +49,15 @@ func main() {
 					Aliases: []string{"p"},
 					Usage:   "util ping",
 					Action: func(c *cli.Context) error {
-						conf, err := configuration.ReadConfig()
-						if err != nil {
-							fmt.Fprint(os.Stderr, "Error: Failed reding config file. \n")
-							os.Exit(1)
-						}
+						// conf, err := configuration.ReadConfig()
+						// if err != nil {
+						// 	fmt.Fprint(os.Stderr, "Error: Failed reding config file. \n")
+						// 	os.Exit(1)
+						// }
 
-						configuration.Url
+						//configuration.Url
 
-						fmt.Print(result)
+						//fmt.Print(result)
 //						CheckPing(conf)
 						return nil
 					},
@@ -101,6 +101,7 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
+
 						fmt.Printf("\n%v", conf)
 						//DeviceSendMessage(c.Args().First())
 						return nil
