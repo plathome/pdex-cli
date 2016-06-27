@@ -7,12 +7,9 @@ import (
 	"os"
 )
 
-type Config struct {
-	URL string `json:"url"`
-}
-
-type Url struct {
-	C *Config
+type ConfigFile struct {
+	PdexUrl 	string `json:"pdex_url"`
+	AccessKey 	string `json:"access_key"`
 }
 
 var (
@@ -42,23 +39,22 @@ func link() {
 	fmt.Printf("the link")
 }
 
-func ReadConfig() (c *Config, err error) {
+func ReadConfigs() (c *ConfigFile, err error) {
 	b, err := ioutil.ReadFile(confPath)
 	if err != nil {
 		return
 	}
 
-	c = new(Config)
+	c = new(ConfigFile)
 	err = json.Unmarshal(b, c)
 	return
 }
 
-func WriteConfig(c *Config) (err error) {
+func WriteConfigs(c *ConfigFile) (err error) {
 	b, err := json.Marshal(c)
 	if err != nil {
 		return
 	}
-
 	err = ioutil.WriteFile(confPath, b, 0755)
 	return
 }

@@ -5,7 +5,8 @@ import (
 	"os"
 	"github.com/urfave/cli"
 	"gopkg.in/resty.v0"
-	"github.com/plathome/pdex-cli/conf"
+//	"github.com/plathome/pdex-cli/conf"
+	"./conf"
 )
 
 func main() {
@@ -29,10 +30,11 @@ func main() {
 							os.Exit(1)
 						}
 						configuration.CreateConfig()
-						conf := &configuration.Config{
-							URL: c.Args().First(),
+						confs := &configuration.ConfigFile{
+							PdexUrl: c.Args().First(),
+							AccessKey: "ACCESS-KEY",
 						}
-						configuration.WriteConfig(conf)
+						configuration.WriteConfigs(confs)
 						fmt.Fprint(os.Stdout, "Success: register url config \n")
 						return nil
 					},
@@ -96,13 +98,13 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Please entry the url. \n")
 							os.Exit(1)
 						}
-						conf, err := configuration.ReadConfig()
+						conf, err := configuration.ReadConfigs()
 						if err != nil {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-
-						fmt.Printf("\n%v", conf)
+						fmt.Println(conf.PdexUrl)
+						fmt.Println(conf.AccessKey)
 						//DeviceSendMessage(c.Args().First())
 						return nil
 					},
