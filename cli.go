@@ -4,25 +4,17 @@ import (
 	"fmt"
 	"os"
 	"github.com/urfave/cli"
-//	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-//	"github.com/plathome/pdex-cli/conf"
-	"./conf"
+	"encoding/json"
+	"github.com/plathome/pdex-cli/conf"
+	"strings"
 )
 
-// type HmacApiResponse struct {
-// 	HmacValue string `json:"digest"`
-// }
-
-type Result struct {
-    Digest string
+type DigestString struct {
+	digest string
 }
-
-// type HMACS struct {
-//     Hmac  string
-// }
 
 func main() {
 	app := cli.NewApp()
@@ -108,12 +100,16 @@ func main() {
 					Aliases: []string{"c"},
 					Usage:   "util hmac",
 					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the key and deid. \n")
+							os.Exit(1)
+						}
 						conf, err := configuration.ReadConfigs()
 						if err != nil {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-						DeviceSendMessage(conf.PdexUrl + "/api/v1/utils/hmac", "e63ab20b0771", "01.8529e6.26387394")
+						HmacDigest(conf.PdexUrl, c.Args().First(), c.Args().Get(1))
 						return nil
 					},
 				},
@@ -129,50 +125,95 @@ func main() {
 					Aliases: []string{"s"},
 					Usage:   "device send",
 					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the key, deid and message \n")
+							os.Exit(1)
+						}
 						conf, err := configuration.ReadConfigs()
 						if err != nil {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-						DeviceSendMessage(conf.PdexUrl + "/api/v1/utils/hmac", "e63ab20b0771", "01.8529e6.26387394")
+						DeviceSendMessage(conf.PdexUrl, c.Args().First(), c.Args().Get(1), c.Args().Get(2))
 						return nil
 					},
 				},
 			},
 		},
 	}
-
 	app.Run(os.Args)
 }
 
-func DeviceSendMessage(urlstr string, secretkey string, deid string) {
-	PostRequest(urlstr, []string{"key","message"} , []string{secretkey,deid} )
+func HmacDigest(urlstr string, secretkey string, deid string) {
+	Hmac(urlstr, []string{"key","message"} , []string{secretkey,deid} )
 }
 
-func ReadMessageByApp() {
-	fmt.Printf("%v\n","MessageByAppInfo")
-}
-
-func ReadMessageByChannel() {
-	fmt.Printf("%v\n","ReadMessageByChannel")
-}
-
-func PostRequest(link string, parameters []string, values []string) (body string, err error) {
+func Hmac(link string, parameters []string, values []string) (body string, err error) {
    data := url.Values{}
    for i := range parameters {
       data.Set(parameters[i], values[i])
    }
-   resp, err := http.PostForm(link, data)
+   resp, err := http.PostForm(link + "/api/v1/utils/hmac", data)
    if err != nil {
       return "", err
    }
    defer resp.Body.Close()
-   ret, err := ioutil.ReadAll(resp.Body)
+   htmlData, err := ioutil.ReadAll(resp.Body)
+   if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+    }
+	fmt.Println(string(htmlData))
+    return string(htmlData), nil
+}
+
+func DeviceSendMessage(link string, secretkey string, deid string, message string) (body string, err error) {
+   parameters := []string{"key","message"}
+   values := []string{secretkey,deid}
+   data := url.Values{}
+   for i := range parameters {
+      data.Set(parameters[i], values[i])
+   }
+   resp, err := http.PostForm(link + "/api/v1/utils/hmac", data)
    if err != nil {
       return "", err
    }
-   fmt.Println(string(ret))
-   return string(ret), nil
+   defer resp.Body.Close()
+   b, _ := ioutil.ReadAll(resp.Body)
+
+   var data2 map[string]interface{}
+   json.Unmarshal(b, &data2)
+
+   digest, _ := data2["digest"].(string)
+   SendMessage(link, deid, digest, message)
+   return string(b), nil
+}
+
+func SendMessage(urlStr string, deid string, digestkey string, message string) {
+	v := url.Values{}
+	v.Add("msg", message)
+	s := v.Encode()
+	req, err := http.NewRequest("POST", urlStr + "/api/v1/devices/" + deid + "/message", strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + digestkey)
+
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("read resp.Body successfully:\n%v\n", string(data))
 }
 
 func GetUtils(urlstr string, utils string) {
