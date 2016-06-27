@@ -8,9 +8,8 @@ import (
 	"net/http"
 	"net/url"
 	"encoding/json"
-//	"github.com/plathome/pdex-cli/conf"
+	"github.com/plathome/pdex-cli/conf"
 	"strings"
-	"./conf"
 )
 
 type DigestString struct {
