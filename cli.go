@@ -141,22 +141,6 @@ func main() {
 			},
 		},
 		{
-			Name:    "app",
-			Aliases: []string{"a"},
-			Usage:   "pdex app",
-			Subcommands: []cli.Command{
-				{
-					Name:    "readmsg",
-					Aliases: []string{"r"},
-					Usage:   "read message",
-					Action: func(c *cli.Context) error {
-						fmt.Println("App Read Message")
-						return nil
-					},
-				},
-			},
-		},
-		{
 			Name:    "channel",
 			Aliases: []string{"ch"},
 			Usage:   "pdex channel",
@@ -175,7 +159,7 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-						ReadMessageChannel(conf.PdexUrl,c.Args().First(), c.Args().Get(1))
+						ReadMessage("channels", conf.PdexUrl,c.Args().First(), c.Args().Get(1))
 						return nil
 					},
 				},
@@ -193,7 +177,50 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-						ReadSingleMessageChannel(conf.PdexUrl,c.Args().First(), c.Args().Get(1), c.Args().Get(2))
+						ReadSingleMessage("channels", conf.PdexUrl,c.Args().First(), c.Args().Get(1), c.Args().Get(2))
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:    "app",
+			Aliases: []string{"ap"},
+			Usage:   "pdex app",
+			Subcommands: []cli.Command{
+				{
+					Name:    "readmsg",
+					Aliases: []string{"r"},
+					Usage:   "read message",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the channel-id and app-token. \n")
+							os.Exit(1)
+						}
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						ReadMessage("apps", conf.PdexUrl,c.Args().First(), c.Args().Get(1))
+						return nil
+					},
+				},
+				{
+					Name:    "read",
+					Aliases: []string{"rd"},
+					Usage:   "read single message",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the channel-id, app-token and msgid. \n")
+							os.Exit(1)
+						}
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						ReadSingleMessage("apps", conf.PdexUrl,c.Args().First(), c.Args().Get(1), c.Args().Get(2))
 						return nil
 					},
 				},
@@ -290,10 +317,10 @@ func GetUtils(urlstr string, utils string) {
 	fmt.Println(string(htmlData))
 }
 
-func ReadMessageChannel(urlstr string, channelid string, apptoken string) {
+func ReadMessage(sourcetype string, urlstr string, typeid string, apptoken string) {
 	v := url.Values{}
 	s := v.Encode()
-	req, err := http.NewRequest("GET", urlstr + "/channels/" + channelid + "/messages", strings.NewReader(s))
+	req, err := http.NewRequest("GET", urlstr + "/" + sourcetype + "/" + typeid + "/messages", strings.NewReader(s))
 	if err != nil {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
@@ -316,10 +343,10 @@ func ReadMessageChannel(urlstr string, channelid string, apptoken string) {
 	fmt.Printf("%v\n", string(data))
 }
 
-func ReadSingleMessageChannel(urlstr string, channelid string, apptoken string, msgid string) {
+func ReadSingleMessage(sourcetype string, urlstr string, typeid string, apptoken string, msgid string) {
 	v := url.Values{}
 	s := v.Encode()
-	req, err := http.NewRequest("GET", urlstr + "/channels/" + channelid + "/messages/" + msgid, strings.NewReader(s))
+	req, err := http.NewRequest("GET", urlstr + "/" + sourcetype + "/" + typeid + "/messages/" + msgid, strings.NewReader(s))
 	if err != nil {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
