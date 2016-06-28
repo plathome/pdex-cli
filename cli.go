@@ -63,7 +63,7 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-						GetUtils(conf.PdexUrl,"/api/v1/utils/ping")
+						GetUtils(conf.PdexUrl,"/utils/ping")
 						return nil
 					},
 				},
@@ -77,7 +77,7 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-						GetUtils(conf.PdexUrl,"/api/v1/utils/version")
+						GetUtils(conf.PdexUrl,"/utils/version")
 						return nil
 					},
 				},
@@ -91,7 +91,7 @@ func main() {
 							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 							os.Exit(1)
 						}
-						GetUtils(conf.PdexUrl,"/api/v1/utils/changelog")
+						GetUtils(conf.PdexUrl,"/utils/changelog")
 						return nil
 					},
 				},
@@ -153,7 +153,7 @@ func Hmac(link string, parameters []string, values []string) (body string, err e
    for i := range parameters {
       data.Set(parameters[i], values[i])
    }
-   resp, err := http.PostForm(link + "/api/v1/utils/hmac", data)
+   resp, err := http.PostForm(link + "/utils/hmac", data)
    if err != nil {
       return "", err
    }
@@ -174,7 +174,7 @@ func DeviceSendMessage(link string, secretkey string, deid string, message strin
    for i := range parameters {
       data.Set(parameters[i], values[i])
    }
-   resp, err := http.PostForm(link + "/api/v1/utils/hmac", data)
+   resp, err := http.PostForm(link + "/utils/hmac", data)
    if err != nil {
       return "", err
    }
@@ -193,7 +193,7 @@ func SendMessage(urlStr string, deid string, digestkey string, message string) {
 	v := url.Values{}
 	v.Add("msg", message)
 	s := v.Encode()
-	req, err := http.NewRequest("POST", urlStr + "/api/v1/devices/" + deid + "/message", strings.NewReader(s))
+	req, err := http.NewRequest("POST", urlStr + "/devices/" + deid + "/message", strings.NewReader(s))
 	if err != nil {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
@@ -213,7 +213,7 @@ func SendMessage(urlStr string, deid string, digestkey string, message string) {
 		fmt.Printf("error: %v\n", err)
 		return
 	}
-	fmt.Printf("read resp.Body successfully:\n%v\n", string(data))
+	fmt.Printf("%v\n", string(data))
 }
 
 func GetUtils(urlstr string, utils string) {
