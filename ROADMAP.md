@@ -23,8 +23,10 @@ The consideration: Release target date 30/06/2016
 
 1. Ability to show Utility functions i.e., Ping, Version and Changelog  :Release 27/06/2016
 1. Ability to send messages using device info                           :Release 27/06/2016
-1. Ability to read messages using channel info, app info                :Release 28/06/2016
-1. Ability to manage Profiles                                           :Release 29/06/2016
+1. Bug fix for release 0.0.7                                            :Release 28/06/2016
+1. Ability to set sendpoint (PDExchange platform, On premises platform) :Release 28/06/2016
+1. Ability to read messages using channel info, app info                :Release 29/06/2016
+1. Ability to manage Profiles                                           :Release 30/06/2016
 1. Ability to read latest message
 1. Ability to send commands using channel info
 1. Ability to read commands using device info
