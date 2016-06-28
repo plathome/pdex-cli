@@ -20,7 +20,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "pdex-cli"
 	app.Usage = "The cli tool for pd-exchange"
-	app.Version = "0.0.8"
+	app.Version = "0.0.9"
 	app.Commands = []cli.Command {
 		{
 			Name:    "config",
@@ -50,8 +50,8 @@ func main() {
 		},
 		{
 			Name:    "util",
-			Aliases: []string{"n"},
-			Usage:   "pdcli util",
+			Aliases: []string{"u"},
+			Usage:   "pdex util",
 			Subcommands: []cli.Command{
 				{
 					Name:    "ping",
@@ -97,7 +97,7 @@ func main() {
 				},
 				{
 					Name:    "hmac",
-					Aliases: []string{"c"},
+					Aliases: []string{"h"},
 					Usage:   "util hmac",
 					Action: func(c *cli.Context) error {
 						if c.Args().First() == "" {
@@ -118,7 +118,7 @@ func main() {
 		{
 			Name:    "device",
 			Aliases: []string{"d"},
-			Usage:   "pdcli device",
+			Usage:   "pdex device",
 			Subcommands: []cli.Command{
 				{
 					Name:    "sendmsg",
@@ -135,6 +135,65 @@ func main() {
 							os.Exit(1)
 						}
 						DeviceSendMessage(conf.PdexUrl, c.Args().First(), c.Args().Get(1), c.Args().Get(2))
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:    "app",
+			Aliases: []string{"a"},
+			Usage:   "pdex app",
+			Subcommands: []cli.Command{
+				{
+					Name:    "readmsg",
+					Aliases: []string{"r"},
+					Usage:   "read message",
+					Action: func(c *cli.Context) error {
+						fmt.Println("App Read Message")
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:    "channel",
+			Aliases: []string{"ch"},
+			Usage:   "pdex channel",
+			Subcommands: []cli.Command{
+				{
+					Name:    "readmsg",
+					Aliases: []string{"r"},
+					Usage:   "read message",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the channel-id and app-token. \n")
+							os.Exit(1)
+						}
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						ReadMessageChannel(conf.PdexUrl,c.Args().First(), c.Args().Get(1))
+						return nil
+					},
+				},
+				{
+					Name:    "read",
+					Aliases: []string{"rd"},
+					Usage:   "read single message",
+					Action: func(c *cli.Context) error {
+						if c.Args().First() == "" {
+							fmt.Fprint(os.Stderr, "Error: Please entry the channel-id, app-token and msgid. \n")
+							os.Exit(1)
+						}
+						conf, err := configuration.ReadConfigs()
+						if err != nil {
+							fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+							os.Exit(1)
+						}
+						ReadSingleMessageChannel(conf.PdexUrl,c.Args().First(), c.Args().Get(1), c.Args().Get(2))
 						return nil
 					},
 				},
@@ -231,3 +290,54 @@ func GetUtils(urlstr string, utils string) {
 	fmt.Println(string(htmlData))
 }
 
+func ReadMessageChannel(urlstr string, channelid string, apptoken string) {
+	v := url.Values{}
+	s := v.Encode()
+	req, err := http.NewRequest("GET", urlstr + "/channels/" + channelid + "/messages", strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + apptoken)
+
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
+}
+
+func ReadSingleMessageChannel(urlstr string, channelid string, apptoken string, msgid string) {
+	v := url.Values{}
+	s := v.Encode()
+	req, err := http.NewRequest("GET", urlstr + "/channels/" + channelid + "/messages/" + msgid, strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + apptoken)
+
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
+}
