@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"../cmd"
+	"github.com/plathome/pdex-cli/cmd"
 )
 
 func UtilsCmd() cli.Command {
