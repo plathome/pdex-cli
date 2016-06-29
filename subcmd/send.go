@@ -39,9 +39,9 @@ func subCmdSendCommands() cli.Command {
 func subCmdSendMessages() cli.Command {
 	return cli.Command{
 		Name:        "messages",
-		Aliases: []string{"cmd"},
+		Aliases: []string{"msg"},
 		Description: "sending messages to apps, channels",
-		Usage:       "send messages --deviceid=deviceid",
+		Usage:       "send messages --deviceid=<deviceid>",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "deviceid",
