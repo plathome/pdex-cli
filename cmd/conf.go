@@ -16,7 +16,7 @@ type ConfigFile struct {
 
 var (
 	h            = os.Getenv("HOME")
-	confDirName  = ".pdex_cli"
+	confDirName  = ".pdex-cli"
 	confFileName = "conf.json"
 	confDir      = fmt.Sprintf("%s/%s", h, confDirName)
 	confPath     = fmt.Sprintf("%s/%s", confDir, confFileName)
