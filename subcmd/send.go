@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/cmd"
+//	"github.com/plathome/pdex-cli/cmd"
+	"../cmd"
 )
 
 func SendCmd() cli.Command {
@@ -30,6 +31,12 @@ func subCmdSendCommands() cli.Command {
 				Value:       "",
 				Usage:       "send commands --channelid=<channelid>.",
 				Destination: &subcmd.FlagChannelId,
+			},
+			cli.StringFlag{
+				Name:        "appid",
+				Value:       "",
+				Usage:       "send commands --appid=<appid>.",
+				Destination: &subcmd.FlagAppId,
 			},
 		},
 		Action: subcmd.SendCommands,

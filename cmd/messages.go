@@ -13,6 +13,8 @@ import (
 
 var (
 	FlagDeviceId string
+	FlagAppId string
+	FlagMsgId string
 )
 
 func SendMessages(context *cli.Context) error {
@@ -26,7 +28,22 @@ func SendMessages(context *cli.Context) error {
 }
 
 func ReadMessages(context *cli.Context) error {
-	fmt.Println("ReadMessages method")
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+		os.Exit(1)
+	}
+	apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
+	if FlagAppId == "" && FlagMsgId == "" {
+		fmt.Println("message list 		: pdex read messages --appid=<appid>")
+		fmt.Println("message content 	: pdex read messages --appid=<appid> --msgid=<msgid>")
+	}
+	if FlagAppId != "" && FlagMsgId == "" {
+		ReadMessage("apps", conf.PdexUrl, FlagAppId, apptoken)
+	}
+	if FlagAppId != "" && FlagMsgId != "" {
+		ReadSingleMessage("apps", conf.PdexUrl, FlagAppId, apptoken, FlagMsgId)
+	}
 	return nil
 }
 
@@ -107,4 +124,83 @@ func GetSecretKey(urlstr string, accesstoken string) (body string) {
 	json.Unmarshal(data, &secretkey)
 	key, _ := secretkey["secret_key"].(string)
 	return key
+}
+
+func GetAppToken(urlstr string, accesstoken string, appid string) (body string) {
+	v := url.Values{}
+	s := v.Encode()
+	req, err := http.NewRequest("GET", urlstr + "/apps/" + appid , strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + accesstoken)
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	var secretkey map[string]interface{}
+	json.Unmarshal(data, &secretkey)
+	key, _ := secretkey["app_token"].(string)
+	return key
+}
+
+func ReadMessage(sourcetype string, urlstr string, typeid string, apptoken string) {
+	v := url.Values{}
+	s := v.Encode()
+	req, err := http.NewRequest("GET", urlstr + "/" + sourcetype + "/" + typeid + "/messages", strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + apptoken)
+
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
+}
+
+func ReadSingleMessage(sourcetype string, urlstr string, typeid string, apptoken string, msgid string) {
+	v := url.Values{}
+	s := v.Encode()
+	req, err := http.NewRequest("GET", urlstr + "/" + sourcetype + "/" + typeid + "/messages/" + msgid, strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + apptoken)
+
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
 }
