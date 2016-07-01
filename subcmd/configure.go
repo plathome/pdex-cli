@@ -52,7 +52,7 @@ func subCmdConfigureProfile() cli.Command {
 			cli.StringFlag{
 				Name:        "name",
 				Value:       "",
-				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT",
+				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT --access-key ACCESS_KEY",
 				Destination: &subcmd.FlagProfileName,
 			},
 			cli.StringFlag{
