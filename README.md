@@ -20,10 +20,21 @@ chmod +x /usr/local/bin/pdex
 Step 1:
 
 ```
-go build
+export GOPATH=~/src
+export GOBIN=$GOPATH/bin
+go get
+cd $GOPATH/src
 ```
 
 Step 2:
+
+```
+go get github.com/plathome/pdex-cli
+cd $GOPATH/src/github.com/plathome/pdex-cli
+go build .
+```
+
+Step 3:
 
 ```
 go run cli.go
