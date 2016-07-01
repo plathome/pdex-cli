@@ -12,6 +12,7 @@ import (
 type ConfigFile struct {
 	PdexUrl 	string `json:"pdex_url"`
 	AccessKey 	string `json:"access_key"`
+	ConfigFile 	string `json:"config_file"`
 }
 
 var (
@@ -22,22 +23,115 @@ var (
 	confPath     = fmt.Sprintf("%s/%s", confDir, confFileName)
 	FlagUrl 		string
 	FlagAccessKey 	string
+	FlagProfileName string
 )
 
 func ConfigureCommands(context *cli.Context) error {
+	urlstring  := ""
+	keystring  := ""
+
+	if FlagUrl == "" && FlagAccessKey == "" {
+		fmt.Println("configure set --url API_END_POINT --accesskey ACCESS_KEY")
+		fmt.Println("configure set --url API_END_POINT")
+		fmt.Println("configure set --access-key ACCESS_KEY")
+		return nil
+	}
+
+	if FlagUrl != "" && FlagAccessKey == "" {
+		conf, err := ReadConfigs()
+		if err != nil {
+			fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+			os.Exit(1)
+		}
+		urlstring  = conf.PdexUrl
+		keystring  = conf.AccessKey
+
+		urlstring = FlagUrl
+	}
+
+	if FlagUrl == "" && FlagAccessKey != "" {
+		conf, err := ReadConfigs()
+		if err != nil {
+			fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+			os.Exit(1)
+		}
+		urlstring  = conf.PdexUrl
+		keystring  = conf.AccessKey
+
+		keystring = FlagAccessKey
+	}
+
+	if FlagUrl != "" && FlagAccessKey != "" {
+		urlstring 	= FlagUrl
+		keystring 	= FlagAccessKey
+	}
+
+	CreateConfig()
+	confs := &ConfigFile{
+		PdexUrl: urlstring,
+		AccessKey: keystring,
+		ConfigFile: "conf.json",
+	}
+	WriteConfigs(confs)
+	fmt.Println("successfully configured")
+	return nil
+}
+
+func ConfigureCommandsProfile(context *cli.Context) error {
+	if FlagProfileName != "" {
+
+		conf, err := ReadConfigs()
+		if err != nil {
+			fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+			os.Exit(1)
+		}
+		urlstring 	:= conf.PdexUrl
+		keystring 	:= conf.AccessKey
+		configfile 	:= FlagProfileName + ".json"
+		CreateConfig()
+		confs := &ConfigFile{
+			PdexUrl: urlstring,
+			AccessKey: keystring,
+			ConfigFile: configfile,
+		}
+		WriteConfigs(confs)
+
+		confPath     = fmt.Sprintf("%s/%s", confDir, FlagProfileName + ".json")
+		CreateConfig()
+		configs := &ConfigFile {
+			PdexUrl: "",
+			AccessKey: "",
+			ConfigFile: FlagProfileName + ".json",
+		}
+		WriteConfigs(configs)
+	}
+
 	conf, err := ReadConfigs()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-	urlstring := conf.PdexUrl
-	keystring := conf.AccessKey
+	urlstring 	:= conf.PdexUrl
+	keystring 	:= conf.AccessKey
+	configfile 	:= conf.ConfigFile
 
-	if len(FlagUrl) != 0 {
+	if FlagUrl == "" && FlagAccessKey == "" {
+		fmt.Println("configure profile --name PROFILE_NAME --url API_END_POINT --accesskey ACCESS_KEY")
+		fmt.Println("configure profile --name PROFILE_NAME --url API_END_POINT")
+		fmt.Println("configure profile --name PROFILE_NAME --access-key ACCESS_KEY")
+		return nil
+	}
+
+	if FlagUrl != "" && FlagAccessKey == "" {
 		urlstring = FlagUrl
 	}
 
-	if len(FlagAccessKey) != 0 {
+	if FlagUrl == "" && FlagAccessKey != "" {
+		keystring = FlagAccessKey
+	}
+
+	if FlagUrl != "" && FlagAccessKey != "" {
+		urlstring = FlagUrl
 		keystring = FlagAccessKey
 	}
 
@@ -45,6 +139,7 @@ func ConfigureCommands(context *cli.Context) error {
 	confs := &ConfigFile{
 		PdexUrl: urlstring,
 		AccessKey: keystring,
+		ConfigFile: configfile,
 	}
 	WriteConfigs(confs)
 	fmt.Println("successfully configured")
@@ -52,16 +147,18 @@ func ConfigureCommands(context *cli.Context) error {
 }
 
 func ListConfigureCommands(context *cli.Context) error {
-	conf, err := ReadConfigs()
+	SetActingProfile()
+
+	confr, err := ReadConfigs()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-	key  := conf.AccessKey
-	replacement := substr(key,0,len(key)-4)
-	fmt.Println("End point Url: ",conf.PdexUrl)
+	key  := confr.AccessKey
+	replacement := SubStr(key,0,len(key)-4)
+	fmt.Println("End point Url: ",confr.PdexUrl)
 	fmt.Println("Access key   : ",strings.Replace(key,replacement , "********", 1))
-	fmt.Println("Config File  : ",confPath)
+	fmt.Println("Config File  : ",confr.ConfigFile)
 	return nil
 }
 
@@ -103,11 +200,24 @@ func RemoveConfig() (err error) {
 	return
 }
 
-func substr(s string,pos,length int) string {
+func SubStr(s string,pos,length int) string {
     runes:=[]rune(s)
     ln := pos+length
     if ln > len(runes) {
         ln = len(runes)
     }
     return string(runes[pos:ln])
+}
+
+func SetConfigFile() string {
+	file := "conf.json"
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+		os.Exit(1)
+	}
+	if conf.ConfigFile != "" {
+		file = conf.ConfigFile
+	}
+	return file
 }

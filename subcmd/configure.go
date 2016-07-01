@@ -14,6 +14,7 @@ func ConfigureCmd() cli.Command {
 	}
 	command.Subcommands = []cli.Command{
 		subCmdConfigure(),
+		subCmdConfigureProfile(),
 		subCmdConfigureList(),
 	}
 	return command
@@ -22,23 +23,52 @@ func ConfigureCmd() cli.Command {
 func subCmdConfigure() cli.Command {
 	return cli.Command{
 		Name:        "set",
-		Description: "list configuration profiles setup",
-		Usage:       "configure set --url <endpoint> --accesskey <key>",
+		Description: "configuration profiles setup",
+		Usage:       "configure set --url API_END_POINT --accesskey ACCESS_KEY",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "url",
 				Value:       "",
-				Usage:       "list the devicegroups <devicegroupid>.",
+				Usage:       "configure set --url API_END_POINT",
 				Destination: &subcmd.FlagUrl,
 			},
 			cli.StringFlag{
-				Name:        "accesskey",
+				Name:        "access-key",
 				Value:       "",
-				Usage:       "list the devicegroups <devicegroupid>.",
+				Usage:       "configure set --accesskey ACCESS_KEY",
 				Destination: &subcmd.FlagAccessKey,
 			},
 		},
 		Action:      subcmd.ConfigureCommands,
+	}
+}
+
+func subCmdConfigureProfile() cli.Command {
+	return cli.Command{
+		Name:        "profile",
+		Description: "configuration profiles setup for profile",
+		Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT --access-key ACCESS_KEY",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "name",
+				Value:       "",
+				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT",
+				Destination: &subcmd.FlagProfileName,
+			},
+			cli.StringFlag{
+				Name:        "url",
+				Value:       "",
+				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT",
+				Destination: &subcmd.FlagUrl,
+			},
+			cli.StringFlag{
+				Name:        "access-key",
+				Value:       "",
+				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT --access-key ACCESS_KEY",
+				Destination: &subcmd.FlagAccessKey,
+			},
+		},
+		Action:      subcmd.ConfigureCommandsProfile,
 	}
 }
 

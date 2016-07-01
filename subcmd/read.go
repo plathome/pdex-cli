@@ -27,15 +27,15 @@ func subCmdReadCommands() cli.Command {
 		Usage:       "read commands",
 		Flags: []cli.Flag{
 			cli.StringFlag{
-				Name:        "deviceid",
+				Name:        "deid",
 				Value:       "",
-				Usage:       "read commands --deviceid=<deviceid>.",
+				Usage:       "read commands --deid=DEVICE_ID",
 				Destination: &subcmd.FlagDeviceId,
 			},
 			cli.StringFlag{
 				Name:        "cmdid",
 				Value:       "",
-				Usage:       "read commands --deviceid=<deviceid> --cmdif=<cmdid>.",
+				Usage:       "read commands --deid=DEVICE_ID --cmdid=COMMAND_ID",
 				Destination: &subcmd.FlagCmdId,
 			},
 		},
@@ -51,16 +51,22 @@ func subCmdReadMessages() cli.Command {
 		Usage:       "read messages",
 		Flags: []cli.Flag{
 			cli.StringFlag{
-				Name:        "appid",
+				Name:        "app-id",
 				Value:       "",
-				Usage:       "read messages --appid=<appid>.",
+				Usage:       "read messages --app-id=APP_ID",
 				Destination: &subcmd.FlagAppId,
 			},
 			cli.StringFlag{
 				Name:        "msgid",
 				Value:       "",
-				Usage:       "read messages --appid=<appid> --msgid=<mgsid>.",
+				Usage:       "read messages --app-id=APP_ID --msgid=MSG_ID",
 				Destination: &subcmd.FlagMsgId,
+			},
+			cli.StringFlag{
+				Name:        "channel-id",
+				Value:       "",
+				Usage:       "read messages --channel-id=CHANNEL_ID --msgid=MSG_ID",
+				Destination: &subcmd.FlagChannelId,
 			},
 		},
 		Action:      subcmd.ReadMessages,

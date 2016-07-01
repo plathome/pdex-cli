@@ -10,6 +10,7 @@ import (
 )
 
 func PingCommand(context *cli.Context) error {
+	SetActingProfile()
 	conf, err := ReadConfigs()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
@@ -20,6 +21,7 @@ func PingCommand(context *cli.Context) error {
 }
 
 func VersionCommand(context *cli.Context) error {
+	SetActingProfile()
 	conf, err := ReadConfigs()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
@@ -30,6 +32,7 @@ func VersionCommand(context *cli.Context) error {
 }
 
 func ChangelogCommand(context *cli.Context) error {
+	SetActingProfile()
 	conf, err := ReadConfigs()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
@@ -87,6 +90,5 @@ func Hmac(link string, parameters []string, values []string) (body string, err e
 		fmt.Println(err)
 		os.Exit(1)
     }
-	fmt.Println(string(htmlData))
     return string(htmlData), nil
 }

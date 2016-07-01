@@ -27,13 +27,13 @@ func subCmdSendCommands() cli.Command {
 		Usage:       "send commands --channelid=channelid",
 		Flags: []cli.Flag{
 			cli.StringFlag{
-				Name:        "channelid",
+				Name:        "channel-id",
 				Value:       "",
 				Usage:       "send commands --channelid=<channelid>.",
 				Destination: &subcmd.FlagChannelId,
 			},
 			cli.StringFlag{
-				Name:        "appid",
+				Name:        "app-id",
 				Value:       "",
 				Usage:       "send commands --appid=<appid>.",
 				Destination: &subcmd.FlagAppId,
@@ -48,12 +48,12 @@ func subCmdSendMessages() cli.Command {
 		Name:        "messages",
 		Aliases: []string{"msg"},
 		Description: "sending messages to apps, channels",
-		Usage:       "send messages --deviceid=<deviceid>",
+		Usage:       "send messages --deid DEVICE_ID",
 		Flags: []cli.Flag{
 			cli.StringFlag{
-				Name:        "deviceid",
+				Name:        "deid",
 				Value:       "",
-				Usage:       "send messages --deviceid=<deviceid>.",
+				Usage:       "send messages --deid DEVICE_ID",
 				Destination: &subcmd.FlagDeviceId,
 			},
 		},

@@ -18,32 +18,52 @@ var (
 )
 
 func SendMessages(context *cli.Context) error {
-	conf, err := ReadConfigs()
-	if err != nil {
-		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
-		os.Exit(1)
+	if FlagDeviceId == "" {
+		fmt.Println("send messages --deid DEVICE_ID")
+		return nil
+	} else {
+		SetActingProfile()
+		conf, err := ReadConfigs()
+		if err != nil {
+			fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+			os.Exit(1)
+		}
+		DeviceSendMessage(conf.PdexUrl, conf.AccessKey, FlagDeviceId, context.Args().First())
 	}
-	DeviceSendMessage(conf.PdexUrl, conf.AccessKey, FlagDeviceId, context.Args().First())
 	return nil
 }
 
 func ReadMessages(context *cli.Context) error {
+	SetActingProfile()
 	conf, err := ReadConfigs()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-	apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
-	if FlagAppId == "" && FlagMsgId == "" {
-		fmt.Println("message list 		: pdex read messages --appid=<appid>")
-		fmt.Println("message content 	: pdex read messages --appid=<appid> --msgid=<msgid>")
+	if FlagAppId == "" && FlagMsgId == "" && FlagChannelId == "" {
+		fmt.Println("pdex read messages --app-id APP_ID")
+		fmt.Println("pdex read messages --app-id APP_ID --msgid MSG_ID")
+		fmt.Println("pdex read messages --channel-id CHANNEL_ID --app-id APP_ID")
+		fmt.Println("pdex read messages --channel-id CHANNEL_ID --app-id APP_ID --msgid MSG_ID")
 	}
-	if FlagAppId != "" && FlagMsgId == "" {
+	if FlagAppId != "" && FlagMsgId == "" && FlagChannelId == "" {
+		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
 		ReadMessage("apps", conf.PdexUrl, FlagAppId, apptoken)
 	}
-	if FlagAppId != "" && FlagMsgId != "" {
+	if FlagAppId != "" && FlagMsgId != "" && FlagChannelId == "" {
+		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
 		ReadSingleMessage("apps", conf.PdexUrl, FlagAppId, apptoken, FlagMsgId)
 	}
+
+	if FlagAppId != "" && FlagMsgId == "" && FlagChannelId != "" {
+		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
+		ReadMessage("channels", conf.PdexUrl, FlagChannelId, apptoken)
+	}
+	if FlagAppId != "" && FlagMsgId != "" && FlagChannelId != "" {
+		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
+		ReadSingleMessage("channels", conf.PdexUrl, FlagChannelId, apptoken, FlagMsgId)
+	}
+
 	return nil
 }
 
