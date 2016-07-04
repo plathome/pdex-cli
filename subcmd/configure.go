@@ -74,10 +74,10 @@ func subCmdConfigureProfile() cli.Command {
 
 func subCmdConfigureList() cli.Command {
 	return cli.Command{
-		Name:        "list",
-		Aliases: []string{"ls"},
-		Description: "list configuration profiles",
-		Usage:       "configure list",
-		Action:      subcmd.ListConfigureCommands,
+		Name:        	"list",
+		Aliases: 		[]string{"ls"},
+		Description: 	"list configuration profiles",
+		Usage:       	"configure list",
+		Action:      	subcmd.ListConfigureCommands,
 	}
 }

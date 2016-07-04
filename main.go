@@ -17,6 +17,8 @@ func main() {
 		cmd.ReadCmd(),
 		cmd.ConfigureCmd(),
 		cmd.UtilsCmd(),
+		cmd.ShowCmd(),
+		cmd.CreateCmd(),
 	}
 	app.Run(os.Args)
 }
