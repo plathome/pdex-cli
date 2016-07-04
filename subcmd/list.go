@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/cmd"
-//	"../cmd"
+//	"github.com/plathome/pdex-cli/cmd"
+	"../cmd"
 )
 
 func ListCmd() cli.Command {
@@ -13,7 +13,6 @@ func ListCmd() cli.Command {
 		Usage: "list up desired resource",
 	}
 	command.Subcommands = []cli.Command{
-		subCmdMe(),
 		subCmdDeviceGroups(),
 		subCmdDevices(),
 		subCmdChannels(),
@@ -22,30 +21,13 @@ func ListCmd() cli.Command {
 	return command
 }
 
-func subCmdMe() cli.Command {
-	return cli.Command{
-		Name:        "me",
-		Description: "show user resources.",
-		Usage:       "list me",
-		Action:      subcmd.ListMyself,
-	}
-}
-
 func subCmdDeviceGroups() cli.Command {
 	return cli.Command{
 		Name:        "devicegroups",
 		Aliases: []string{"dg"},
-		Description: "devicegroups --devicegroupid",
-		Usage:       "list devicegroups --devicegroupid=dgid",
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:        "devicegroupid",
-				Value:       "",
-				Usage:       "list the devicegroups <devicegroupid>.",
-				Destination: &subcmd.FlagDeviceGroup,
-			},
-		},
-		Action: subcmd.ListDeviceGroups,
+		Description: "get devicegroups list.",
+		Usage:       "list devicegroups",
+		Action:      subcmd.ListDeviceGroups,
 	}
 }
 

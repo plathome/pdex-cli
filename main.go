@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/urfave/cli"
 	"os"
-	"github.com/plathome/pdex-cli/subcmd"
-//	"./subcmd"
+//	"github.com/plathome/pdex-cli/subcmd"
+	"./subcmd"
 )
 
 func main() {
@@ -17,6 +17,8 @@ func main() {
 		cmd.ReadCmd(),
 		cmd.ConfigureCmd(),
 		cmd.UtilsCmd(),
+		cmd.ShowCmd(),
+		cmd.CreateCmd(),
 	}
 	app.Run(os.Args)
 }
