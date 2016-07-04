@@ -2,15 +2,15 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/cmd"
-//	"../cmd"
+//	"github.com/plathome/pdex-cli/cmd"
+	"../cmd"
 )
 
 func ReadCmd() cli.Command {
-	command := cli.Command{
-		Name:  "read",
-		Aliases: []string{"r"},
-		Usage: "read messages",
+	command := cli.Command {
+		Name:  		"read",
+		Aliases: 	[]string{"r"},
+		Usage: 		"read messages",
 	}
 	command.Subcommands = []cli.Command{
 		subCmdReadCommands(),
@@ -20,11 +20,11 @@ func ReadCmd() cli.Command {
 }
 
 func subCmdReadCommands() cli.Command {
-	return cli.Command{
-		Name:        "commands",
-		Aliases: []string{"cmd"},
-		Description: "read commands from channels",
-		Usage:       "read commands",
+	return cli.Command {
+		Name:        	"commands",
+		Aliases: 		[]string{"cmd"},
+		Description: 	"read commands from channels",
+		Usage:       	"read commands",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "deid",
@@ -45,10 +45,10 @@ func subCmdReadCommands() cli.Command {
 
 func subCmdReadMessages() cli.Command {
 	return cli.Command{
-		Name:        "messages",
-		Aliases: []string{"msg"},
-		Description: "read messages from devices",
-		Usage:       "read messages",
+		Name:        	"messages",
+		Aliases: 		[]string{"msg"},
+		Description: 	"read messages from devices",
+		Usage:       	"read messages",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "app-id",

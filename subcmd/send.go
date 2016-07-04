@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/cmd"
-//	"../cmd"
+//	"github.com/plathome/pdex-cli/cmd"
+	"../cmd"
 )
 
 func SendCmd() cli.Command {
@@ -21,10 +21,10 @@ func SendCmd() cli.Command {
 
 func subCmdSendCommands() cli.Command {
 	return cli.Command{
-		Name:        "commands",
-		Aliases: []string{"cmd"},
-		Description: "sending commands to devices",
-		Usage:       "send commands --channelid=channelid",
+		Name:        	"commands",
+		Aliases: 		[]string{"cmd"},
+		Description: 	"sending commands to devices",
+		Usage:       	"send commands --channelid=channelid",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "channel-id",
@@ -45,10 +45,10 @@ func subCmdSendCommands() cli.Command {
 
 func subCmdSendMessages() cli.Command {
 	return cli.Command{
-		Name:        "messages",
-		Aliases: []string{"msg"},
-		Description: "sending messages to apps, channels",
-		Usage:       "send messages --deid DEVICE_ID",
+		Name:        	"messages",
+		Aliases: 		[]string{"msg"},
+		Description: 	"sending messages to apps, channels",
+		Usage:       	"send messages --deid DEVICE_ID",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "deid",

@@ -4,26 +4,7 @@ import (
 	"os"
 	"fmt"
 	"strings"
-	"io/ioutil"
-	"encoding/json"
 	"github.com/urfave/cli"
-)
-
-type ConfigFile struct {
-	PdexUrl 	string `json:"pdex_url"`
-	AccessKey 	string `json:"access_key"`
-	ConfigFile 	string `json:"config_file"`
-}
-
-var (
-	h            = os.Getenv("HOME")
-	confDirName  = ".pdex-cli"
-	confFileName = "conf.json"
-	confDir      = fmt.Sprintf("%s/%s", h, confDirName)
-	confPath     = fmt.Sprintf("%s/%s", confDir, confFileName)
-	FlagUrl 		string
-	FlagAccessKey 	string
-	FlagProfileName string
 )
 
 func ConfigureCommands(context *cli.Context) error {
@@ -169,72 +150,4 @@ func ListConfigureCommands(context *cli.Context) error {
 	fmt.Println("Access key   : ",strings.Replace(key,replacement , "********", 1))
 	fmt.Println("Config File  : ",confr.ConfigFile)
 	return nil
-}
-
-func ExistConfig() bool {
-	_, err := os.Stat(confPath)
-	return err == nil
-}
-
-func CreateConfig() (err error) {
-	err = os.MkdirAll(confDir, 0755)
-	if err != nil {
-		return
-	}
-	_, err = os.Create(confPath)
-	return
-}
-
-func ReadConfigs() (c *ConfigFile, err error) {
-	b, err := ioutil.ReadFile(confPath)
-	if err != nil {
-		return
-	}
-	c = new(ConfigFile)
-	err = json.Unmarshal(b, c)
-	return
-}
-
-func WriteConfigs(c *ConfigFile) (err error) {
-	b, err := json.Marshal(c)
-	if err != nil {
-		return
-	}
-	err = ioutil.WriteFile(confPath, b, 0755)
-	return
-}
-
-func RemoveConfig() (err error) {
-	err = os.RemoveAll(confPath)
-	return
-}
-
-func SubStr(s string,pos,length int) string {
-    runes:=[]rune(s)
-    ln := pos+length
-    if ln > len(runes) {
-        ln = len(runes)
-    }
-    return string(runes[pos:ln])
-}
-
-func SetConfigFile() string {
-	file := "conf.json"
-	conf, err := ReadConfigs()
-	if err != nil {
-		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
-		os.Exit(1)
-	}
-	if conf.ConfigFile != "" {
-		file = conf.ConfigFile
-	}
-	return file
-}
-
-func FileExists(filename string) bool {
-    _, err := os.Stat(filename)
-    if os.IsNotExist(err) {
-        return false
-    }
-    return true
 }

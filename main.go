@@ -3,15 +3,15 @@ package main
 import (
 	"github.com/urfave/cli"
 	"os"
-	"github.com/plathome/pdex-cli/subcmd"
-//	"./subcmd"
+//	"github.com/plathome/pdex-cli/subcmd"
+	"./subcmd"
 )
 
 func main() {
 	app := cli.NewApp()
 	app.Usage = "The cli tool for pd-exchange"
-	app.Version = "0.1.1"
-	app.Commands = []cli.Command{
+	app.Version = "0.1.3"
+	app.Commands = []cli.Command {
 		cmd.ListCmd(),
 		cmd.SendCmd(),
 		cmd.ReadCmd(),

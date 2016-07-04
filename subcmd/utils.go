@@ -2,15 +2,15 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/cmd"
-//	"../cmd"
+//	"github.com/plathome/pdex-cli/cmd"
+	"../cmd"
 )
 
 func UtilsCmd() cli.Command {
-	command := cli.Command{
-		Name:  "util",
-		Aliases: []string{"u"},
-		Usage: "util ping,version,changelog",
+	command := cli.Command {
+		Name:  		"util",
+		Aliases: 	[]string{"u"},
+		Usage: 		"util ping,version,changelog",
 	}
 	command.Subcommands = []cli.Command{
 		subCmdPing(),
