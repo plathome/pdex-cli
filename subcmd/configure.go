@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-//	"github.com/plathome/pdex-cli/cmd"
-	"../cmd"
+	"github.com/plathome/pdex-cli/cmd"
+//	"../cmd"
 )
 
 func ConfigureCmd() cli.Command {
@@ -74,10 +74,10 @@ func subCmdConfigureProfile() cli.Command {
 
 func subCmdConfigureList() cli.Command {
 	return cli.Command{
-		Name:        "list",
-		Aliases: []string{"ls"},
-		Description: "list configuration profiles",
-		Usage:       "configure list",
-		Action:      subcmd.ListConfigureCommands,
+		Name:        	"list",
+		Aliases: 		[]string{"ls"},
+		Description: 	"list configuration profiles",
+		Usage:       	"configure list",
+		Action:      	subcmd.ListConfigureCommands,
 	}
 }

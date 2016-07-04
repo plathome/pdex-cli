@@ -79,6 +79,15 @@ func ConfigureCommands(context *cli.Context) error {
 
 func ConfigureCommandsProfile(context *cli.Context) error {
 	if FlagProfileName != "" {
+		if FileExists(confPath) == false {
+			CreateConfig()
+			confs := &ConfigFile{
+				PdexUrl: "",
+				AccessKey: "",
+				ConfigFile: FlagProfileName + ".json",
+			}
+			WriteConfigs(confs)
+		}
 
 		conf, err := ReadConfigs()
 		if err != nil {
@@ -220,4 +229,12 @@ func SetConfigFile() string {
 		file = conf.ConfigFile
 	}
 	return file
+}
+
+func FileExists(filename string) bool {
+    _, err := os.Stat(filename)
+    if os.IsNotExist(err) {
+        return false
+    }
+    return true
 }

@@ -79,7 +79,6 @@ func CreateDG(context *cli.Context) error {
 	return nil
 }
 
-//curl -w "\n" -H "Authorization: Bearer c15722ed5cdb" -X POST http://localhost:9292/api/v1/devicegroups
 func CreateDeviceGroupApi(urlstr string, accesskey string) {
 	v := url.Values{}
 	s := v.Encode()
