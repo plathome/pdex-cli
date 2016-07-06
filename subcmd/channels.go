@@ -41,8 +41,16 @@ func ShowChannel(context *cli.Context) error {
 	if FlagAppId != "" && FlagChannelId != "" && FlagDeviceId == "" {
 		apptoken 	:= GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
 		initial_str := ListApiReturn(fmt.Sprintf("%s/%s/%s", conf.PdexUrl, "channels", FlagChannelId), apptoken)
-		replace_str := fmt.Sprintf(",%s", "\"app_token\":\"" + apptoken +"\"}")
-		final_str   := strings.Replace(initial_str,"}",replace_str,-1)
+
+		final_str	:= ""
+
+		if strings.Contains(initial_str, "error") == true {
+			final_str = initial_str
+		} else {
+			replace_str := fmt.Sprintf(",%s", "\"app_token\":\"" + apptoken +"\"}")
+			final_str   = strings.Replace(initial_str,"}",replace_str,-1)
+		}
+
 		fmt.Println(final_str)
 	}
 	return nil

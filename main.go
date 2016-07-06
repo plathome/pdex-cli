@@ -4,6 +4,7 @@ import (
 	"github.com/urfave/cli"
 	"os"
 	"github.com/plathome/pdex-cli/subcmd"
+//	"./cmd"
 )
 
 func main() {

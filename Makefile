@@ -1,6 +1,9 @@
 output=pdex
 
 clean:
+	go clean
+
+cleanall:
 	rm -f ${output}-*
 
 all: clean linux linux64 linuxarm linuxarm64 mac64 mac windows windows64

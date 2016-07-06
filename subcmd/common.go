@@ -164,9 +164,15 @@ func ShowChannelApi(urlstr string, accesskey string, deid string, channelid stri
    json.Unmarshal(b, &data2)
    digest, _ := data2["digest"].(string)
 
-   initial_str := ListApiReturn(urlstr + "/channels/" + channelid  , digest)
-   replace_str := fmt.Sprintf(",%s", "\"digest\":\"" + digest +"\"}")
-   final_str   := strings.Replace(initial_str,"}",replace_str,-1)
+   initial_str 	:= ListApiReturn(urlstr + "/channels/" + channelid  , digest)
+   final_str 	:= ""
+
+   if strings.Contains(initial_str, "error") == true {
+   	 final_str = initial_str
+   } else {
+   		replace_str := fmt.Sprintf(",%s", "\"digest\":\"" + digest +"\"}")
+   		final_str   = strings.Replace(initial_str,"}",replace_str,-1)
+   	}
 
    return final_str, nil
 }
