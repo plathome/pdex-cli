@@ -38,8 +38,8 @@ var (
 	FlagMsgId 			string
 )
 
-func GetUtils(urlstr string, utils string) {
-	resp, err := http.Get(urlstr + utils)
+func GetUtils(urlstr string) (string, error) {
+	resp, err := http.Get(urlstr)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -50,7 +50,7 @@ func GetUtils(urlstr string, utils string) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println(string(htmlData))
+	return string(htmlData), nil
 }
 
 func HmacDigest(urlstr string, secretkey string, deid string) {

@@ -60,9 +60,9 @@ dependencies:
 	fi
 	go get github.com/golang/lint/golint
 
-release: build_releases
-	go get github.com/progrium/gh-release
-	gh-release create plathome/$(NAME) $(VERSION) $(shell git rev-parse --abbrev-ref HEAD)
+# release: build_releases
+# 	go get github.com/progrium/gh-release
+# 	gh-release create plathome/$(NAME) $(VERSION) $(shell git rev-parse --abbrev-ref HEAD)
 
 lint: dependencies
 	golint -set_exit_status

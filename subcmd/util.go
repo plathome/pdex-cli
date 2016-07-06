@@ -13,7 +13,8 @@ func PingCommand(context *cli.Context) error {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-	GetUtils(conf.PdexUrl,"/utils/ping")
+	result, _ :=  GetUtils(fmt.Sprintf("%s%s",conf.PdexUrl,"/utils/ping"))
+	fmt.Println(result)
 	return nil
 }
 
@@ -24,7 +25,8 @@ func VersionCommand(context *cli.Context) error {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-	GetUtils(conf.PdexUrl,"/utils/version")
+	result, _ := GetUtils(fmt.Sprintf("%s%s",conf.PdexUrl,"/utils/version"))
+	fmt.Println(result)
 	return nil
 }
 
@@ -35,7 +37,8 @@ func ChangelogCommand(context *cli.Context) error {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-	GetUtils(conf.PdexUrl,"/utils/changelog")
+	result, _ := GetUtils(fmt.Sprintf("%s%s",conf.PdexUrl,"/utils/changelog"))
+	fmt.Println(result)
 	return nil
 }
 
