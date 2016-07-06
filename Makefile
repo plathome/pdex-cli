@@ -1,33 +1,66 @@
-output=pdex
+NAME=pdex
+HOMEPAGE=https://github.com/plathome/pdex-cli
+VERSION=0.1.4-rc
+TAG=v$(VERSION)
+ARCH=$(shell uname -m)
+PREFIX=/usr/local
+VETARGS?=-all
 
-clean:
-	go clean
+all: lint vet test
 
-cleanall:
-	rm -f ${output}-*
+test: unit acceptance
 
-all: clean linux linux64 linuxarm linuxarm64 mac64 mac windows windows64
+install: build
+	mkdir -p $(PREFIX)/bin
+	cp -v bin/$(NAME) $(PREFIX)/bin/$(NAME)
 
-linux:
-	GOOS=linux GOARCH=386 go build -v -o ${output}-Linux-x86 .
+uninstall:
+	rm -vf $(PREFIX)/bin/$(NAME)
 
-linux64:
-	GOOS=linux GOARCH=amd64 go build -v -o ${output}-Linux-x86_64 .
+unit: dependencies
+	go test
 
-linuxarm:
-	GOOS=linux GOARCH=arm go build -v -o ${output}-Linux-arm .
+acceptance: build
+	bats test
 
-linuxarm64:
-	GOOS=linux GOARCH=arm64 go build -v -o ${output}-Linux-arm64 .
+build: dependencies
+	go build -o bin/$(NAME)
 
-mac64:
-	GOOS=darwin GOARCH=amd64 go build -v -o ${output}-Darwin-x86_64 .
+build_releases: dependencies
+	mkdir -p build/Linux  && GOOS=linux  go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Linux/$(NAME)
+	mkdir -p build/Darwin && GOOS=darwin go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Darwin/$(NAME)
+	rm -rf release && mkdir release
+	# tar -zcf release/$(NAME)_$(VERSION)_linux_$(ARCH).tgz -C build/Linux $(NAME)
+	# tar -zcf release/$(NAME)_$(VERSION)_darwin_$(ARCH).tgz -C build/Darwin $(NAME)
+	cp build/Linux/$(NAME) release/$(NAME)_$(VERSION)_linux_$(ARCH)
+	cp build/Darwin/$(NAME) release/$(NAME)_$(VERSION)_darwin_$(ARCH)
 
-mac:
-	GOOS=darwin GOARCH=386 go build -v -o ${output}-Darwin-x86 .
+dependencies:
+	go get -t
+	@go tool cover 2>/dev/null; if [ $$? -eq 3 ]; then \
+		go get -u golang.org/x/tools/cmd/cover; \
+	fi
+	go get github.com/golang/lint/golint
 
-windows:
-	GOOS=windows GOARCH=386 go build -v -o ${output}-Windows-x86.exe .
+release: build_releases
+	go get github.com/progrium/gh-release
+	gh-release create plathome/$(NAME) $(VERSION) $(shell git rev-parse --abbrev-ref HEAD)
 
-windows64:
-	GOOS=windows GOARCH=amd64 go build -v -o ${output}-Windows-x86_64.exe .
+lint: dependencies
+	golint -set_exit_status
+
+# vet runs the Go source code static analysis tool `vet` to find
+# any common errors.
+vet:
+	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
+		go get golang.org/x/tools/cmd/vet; \
+	fi
+	@echo "go tool vet $(VETARGS)"
+	@go tool vet $(VETARGS) . ; if [ $$? -eq 1 ]; then \
+		echo ""; \
+		echo "Vet found suspicious constructs. Please check the reported constructs"; \
+		echo "and fix them if necessary before submitting the code for review."; \
+		exit 1; \
+	fi
+
+.PHONY: acceptance build build_releases dependencies install test uninstall unit

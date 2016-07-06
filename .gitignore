@@ -1,2 +1,5 @@
 .DS_Store
 pdex*
+bin
+build
+release
