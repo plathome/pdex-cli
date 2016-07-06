@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
+	"bytes"
 	"github.com/plathome/pdex-cli/subcmd"
 //	"../subcmd"
 )
@@ -46,3 +47,12 @@ func subCmdChangelog() cli.Command {
 		Action:      subcmd.ChangelogCommand,
 	}
 }
+
+func StringConcat(array []string) string {
+	var buff bytes.Buffer
+	for _, element := range array {
+		buff.WriteString(element)
+	}
+	return buff.String()
+}
+

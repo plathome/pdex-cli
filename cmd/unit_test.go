@@ -1,8 +1,7 @@
-package main
+package cmd
 
 import (
 	"testing"
-	"github.com/plathome/pdex-cli/cmd"
 )
 
 func TestStringConcat(t *testing.T) {

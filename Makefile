@@ -27,6 +27,8 @@ uninstall:
 
 unit: dependencies
 	go test
+	go test ./cmd
+	go test ./subcmd
 
 acceptance: build
 	bats test

@@ -581,11 +581,3 @@ func FileExists(filename string) bool {
 func AtLeastTwo(a bool, b bool, c bool) bool {
 	return a && (b || c) || (b && c)
 }
-
-func StringConcat(array []string) string {
-	var buff bytes.Buffer
-	for _, element := range array {
-		buff.WriteString(element)
-	}
-	return buff.String()
-}
