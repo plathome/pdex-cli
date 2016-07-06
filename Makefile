@@ -8,6 +8,14 @@ VETARGS?=-all
 
 all: lint vet test
 
+clean:
+	go clean
+
+cleanall:
+	rm -rf bin/$(NAME)
+	rm -rf build/*
+	rm -rf release/*
+
 test: unit acceptance
 
 install: build
@@ -27,13 +35,21 @@ build: dependencies
 	go build -o bin/$(NAME)
 
 build_releases: dependencies
-	mkdir -p build/Linux  && GOOS=linux  go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Linux/$(NAME)
-	mkdir -p build/Darwin && GOOS=darwin go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Darwin/$(NAME)
+	mkdir -p build/Linux  && GOOS=linux  GOARCH=386 	go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Linux/$(NAME)_$(VERSION)_Linux_x86
+	mkdir -p build/Linux  && GOOS=linux  GOARCH=amd64 	go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Linux/$(NAME)_$(VERSION)_Linux_x86_64
+	mkdir -p build/Linux  && GOOS=linux  GOARCH=arm 	go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Linux/$(NAME)_$(VERSION)_Linux_arm
+	mkdir -p build/Linux  && GOOS=linux  GOARCH=arm64	go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Linux/$(NAME)_$(VERSION)_Linux_arm64
+
+	mkdir -p build/Darwin && GOOS=darwin GOARCH=386 	go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Darwin/$(NAME)_$(VERSION)_Darwin_x86
+	mkdir -p build/Darwin && GOOS=darwin GOARCH=amd64 	go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Darwin/$(NAME)_$(VERSION)_Darwin_x86_64
+
+	mkdir -p build/Windows && GOOS=windows GOARCH=386 	go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Windows/$(NAME)_$(VERSION)_Windows-x86.exe
+	mkdir -p build/Windows && GOOS=windows GOARCH=amd64 go build -v -ldflags "-X main.Version=$(VERSION)" -o build/Windows/$(NAME)_$(VERSION)_Windows-x86_64.exe
+
 	rm -rf release && mkdir release
-	# tar -zcf release/$(NAME)_$(VERSION)_linux_$(ARCH).tgz -C build/Linux $(NAME)
-	# tar -zcf release/$(NAME)_$(VERSION)_darwin_$(ARCH).tgz -C build/Darwin $(NAME)
-	cp build/Linux/$(NAME) release/$(NAME)_$(VERSION)_linux_$(ARCH)
-	cp build/Darwin/$(NAME) release/$(NAME)_$(VERSION)_darwin_$(ARCH)
+	mv build/Linux/$(NAME)_$(VERSION)_Linux_* release/
+	mv build/Darwin/$(NAME)_$(VERSION)_Darwin_* release/
+	mv build/Windows/* release/
 
 dependencies:
 	go get -t
