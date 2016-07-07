@@ -53,7 +53,7 @@ func subCmdCreateDevice() cli.Command {
 		Name:        	"devices",
 		Aliases: 		[]string{"de"},
 		Description: 	"create new device",
-		Usage:       	"create devices --deid-prefix APP-NAME-SUFFIX",
+		Usage:       	"create devices --deid-prefix DEVICE-ID-SUFFIX",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "deid-prefix",
