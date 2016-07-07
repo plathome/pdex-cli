@@ -10,10 +10,7 @@ load test_helper
   [ "$output" = "successfully configured" ]
 }
 
-@test "ping" {
-  run $pdex u ping
-  [ "$output" = "{\"result\":\"pong\"}" ]
-}
+# Create API list
 
 @test "create app" {
   run $pdex cr apps --app-name-suffix "test-app-1"
@@ -35,6 +32,8 @@ load test_helper
   [[ $output == *"channel_id"* ]]
 }
 
+# Listing API
+
 @test "list apps" {
   run $pdex ls apps
   echo $output | grep "\"count\""
@@ -54,4 +53,35 @@ load test_helper
   run $pdex ls ch --deid 01.817eb9.c1d6c837
 }
 
+# Show API
+@test "show me" {
+  run $pdex sh me
+  echo $output | grep $PDEX_ACCESS_KEY
+}
 
+# Util API
+@test "ping" {
+  run $pdex u ping
+  [ "$output" = "{\"result\":\"pong\"}" ]
+}
+
+# Send and Read API
+@test "send message" {
+  run $pdex send msg --deid 01.817eb9.bdd15c7e "message send for test"
+  echo $output | grep "\"transaction_id\""
+}
+
+@test "read messages" {
+  run $pdex read msg --app-id b38154ecfe5043af905858e33595a6fe
+  echo $output | grep "\"count\""
+}
+
+@test "send command" {
+  run $pdex send cmd --channel-id 10e0be9636e64317a04d8157342d1e54 --app-id b38154ecfe5043af905858e33595a6fe "test command sending"
+  echo $output | grep "\"transaction_id\""
+}
+
+@test "read commands" {
+  run $pdex read cmd --deid 01.817eb9.bdd15c7e
+  echo $output | grep "\"count\""
+}
