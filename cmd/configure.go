@@ -24,7 +24,7 @@ func subCmdConfigure() cli.Command {
 	return cli.Command {
 		Name:        	"set",
 		Description: 	"configuration profiles setup",
-		Usage:       	"configure set --url API_END_POINT --accesskey ACCESS_KEY",
+		Usage:       	"configure set --url API_END_POINT --access-key ACCESS_KEY",
 		Flags: []cli.Flag {
 			cli.StringFlag {
 				Name:        "url",
@@ -35,7 +35,7 @@ func subCmdConfigure() cli.Command {
 			cli.StringFlag{
 				Name:        "access-key",
 				Value:       "",
-				Usage:       "configure set --accesskey ACCESS_KEY",
+				Usage:       "configure set --access-key ACCESS_KEY",
 				Destination: &subcmd.FlagAccessKey,
 			},
 		},

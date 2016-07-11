@@ -13,3 +13,4 @@ func TestStringConcat(t *testing.T) {
 		t.Error("Strings concatenation error")
 	}
 }
+
