@@ -1,6 +1,6 @@
 NAME=pdex
 HOMEPAGE=https://github.com/plathome/pdex-cli
-VERSION=0.1.4-rc
+VERSION=0.1.5
 TAG=v$(VERSION)
 ARCH=$(shell uname -m)
 PREFIX=/usr/local
