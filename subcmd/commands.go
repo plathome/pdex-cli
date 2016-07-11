@@ -13,7 +13,6 @@ func SendCommands(context *cli.Context) error {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-
 	if FlagAppId == "" || FlagChannelId == "" {
 		fmt.Println("pdex send commands --channel-id CHANNEL_ID --app-id APP_ID")
 	}

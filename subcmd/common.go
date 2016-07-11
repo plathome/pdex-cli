@@ -1,6 +1,7 @@
 package subcmd
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"encoding/json"
@@ -203,15 +204,13 @@ func DeviceSendMessage(link string, accesstoken string, deid string, message str
 }
 
 func SendMessage(urlStr string, deid string, digestkey string, message string) {
-	v := url.Values{}
-	v.Add("msg", message)
-	s := v.Encode()
-	req, err := http.NewRequest("POST", urlStr + "/devices/" + deid + "/message", strings.NewReader(s))
+	req, err := http.NewRequest("POST", urlStr + "/devices/" + deid + "/message", bytes.NewBuffer([]byte(message)))
 	if err != nil {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
 	}
-	req.Header.Add("Authorization", "Bearer " + digestkey)
+	req.Header.Set("content_type", "text/plain")
+	req.Header.Set("Authorization", "Bearer " + digestkey)
 
 	c := &http.Client{}
 	resp, err := c.Do(req)
@@ -441,16 +440,14 @@ func CreateApi(urlstr string, accesskey string, key string, value string) {
 }
 
 func ChannelSendCommand(urlstr string, accesstoken string, channelid string, appid string, command string) {
-	apptoken := GetAppToken(urlstr, accesstoken, appid)
-	v := url.Values{}
-	v.Add("payload",command)
-	s := v.Encode()
-	req, err := http.NewRequest("POST", urlstr + "/channels/" + channelid + "/command", strings.NewReader(s))
+	apptoken 	:= GetAppToken(urlstr, accesstoken, appid)
+	req, err := http.NewRequest("POST", urlstr + "/channels/" + channelid + "/command", bytes.NewBuffer([]byte(command)))
 	if err != nil {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
 	}
-	req.Header.Add("Authorization", "Bearer " + apptoken)
+	req.Header.Set("content_type", "text/plain")
+	req.Header.Set("Authorization", "Bearer " + apptoken)
 
 	c := &http.Client{}
 	resp, err := c.Do(req)
@@ -499,6 +496,29 @@ func ReadCommandsApi(urlstr string, deid string, accesstoken string, commandstr 
 		return
 	}
 	fmt.Printf("%v\n", string(data))
+}
+
+func SendCommandToAllChannels(urlstr string, accesskey string, deid string) (body string, err error) {
+   dgparts 		:= strings.Split(deid,".")
+   devicegroup  := dgparts[0] + "." + dgparts[1]
+   secretkey 	:= GetSecretKey(urlstr + "/devicegroups/" + devicegroup , accesskey)
+   parameters 	:= []string{"key","message"}
+   values 		:= []string{secretkey,deid}
+   data 		:= url.Values{}
+   for i := range parameters {
+      data.Set(parameters[i], values[i])
+   }
+   resp, err := http.PostForm(urlstr + "/utils/hmac", data)
+   if err != nil {
+      return "", err
+   }
+   defer resp.Body.Close()
+   b, _ := ioutil.ReadAll(resp.Body)
+   var data2 map[string]interface{}
+   json.Unmarshal(b, &data2)
+   digest, _ := data2["digest"].(string)
+   ListApi(fmt.Sprintf("%s/%s/%s/%s", urlstr, "devices",deid,"channels"), digest)
+   return string(digest), nil
 }
 
 func SetActingProfile() {

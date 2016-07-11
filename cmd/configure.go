@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/subcmd"
-//	"../subcmd"
+//	"github.com/plathome/pdex-cli/subcmd"
+	"../subcmd"
 )
 
 func ConfigureCmd() cli.Command {
