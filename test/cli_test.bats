@@ -1,3 +1,5 @@
+#!/usr/bin/env bats
+
 load test_helper
 
 @test "setup" {
@@ -18,7 +20,8 @@ load test_helper
 }
 
 @test "create device" {
-  run $pdex cr devices --deid-prefix 01.817eb9
+  run $pdex cr dg | jq .deid_prefix
+  run $pdex cr devices --deid-prefix $output
   [[ $output == *"deid"* ]]
 }
 
@@ -28,29 +31,30 @@ load test_helper
 }
 
 @test "create channels" {
-  run $pdex cr ch --deid 01.817eb9.bdd15c7e --app-id b38154ecfe5043af905858e33595a6fe
-  [[ $output == *"channel_id"* ]]
+  create_channel
+  [[ $CH == *"channel_id"* ]]
 }
 
 # Listing API
 
 @test "list apps" {
-  run $pdex ls apps
-  echo $output | grep "\"count\""
+  list_apps
+  [[ $LIST -ge 1 ]]
 }
 
 @test "list devicegroups" {
-  run $pdex ls dg
-  echo $output | grep "\"count\""
+  list_dgs
+  [[ $LIST -ge 1 ]]
 }
 
 @test "list devices" {
-  run $pdex ls de --deid-prefix 01.bbac01
-  echo $output | grep "\"count\""
+  list_devices
+  [[ $LIST -eq 1 ]]
 }
 
 @test "list channels" {
-  run $pdex ls ch --deid 01.817eb9.c1d6c837
+  list_channel
+  [[ $LIST -eq 1 ]]
 }
 
 # Show API
@@ -67,21 +71,21 @@ load test_helper
 
 # Send and Read API
 @test "send message" {
-  run $pdex send msg --deid 01.817eb9.bdd15c7e "message send for test"
-  echo $output | grep "\"transaction_id\""
+  send_message
+  [[ $XFER == *"transaction_id"* ]]
 }
 
 @test "read messages" {
-  run $pdex read msg --app-id b38154ecfe5043af905858e33595a6fe
-  echo $output | grep "\"count\""
+  read_message
+  [[ $READ -eq 1 ]]
 }
 
 @test "send command" {
-  run $pdex send cmd --channel-id 10e0be9636e64317a04d8157342d1e54 --app-id b38154ecfe5043af905858e33595a6fe "test command sending"
-  echo $output | grep "\"transaction_id\""
+  send_command
+  [[ $XFER == *"transaction_id"* ]]
 }
 
 @test "read commands" {
-  run $pdex read cmd --deid 01.817eb9.bdd15c7e
-  echo $output | grep "\"count\""
+  read_command
+  [[ READ -eq 1 ]]
 }
