@@ -14,6 +14,7 @@ func UpdateCmd() cli.Command {
 	}
 	command.Subcommands = []cli.Command{
 		subCmdUpdateSession(),
+		subCmdUpdatePassword(),
 	}
 	return command
 }
@@ -25,5 +26,29 @@ func subCmdUpdateSession() cli.Command {
 		Description: 	"update session",
 		Usage:       	"update session",
 		Action:      	subcmd.UpdateSession,
+	}
+}
+
+func subCmdUpdatePassword() cli.Command {
+	return cli.Command {
+		Name:			"password",
+		Aliases:		[]string{"pwd"},
+		Description:	"update pwd",
+		Usage:			"update pwd --current-password CURRENT-PASSWORD --new-password PASSWORD",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "current-password",
+				Value:       "",
+				Usage:       "update pwd --current-password CURRENT-PASSWORD --new-password PASSWORD",
+				Destination: &subcmd.FlagCurrentPassword,
+			},
+			cli.StringFlag{
+				Name:        "new-password",
+				Value:       "",
+				Usage:       "update pwd --current-password CURRENT-PASSWORD --new-password PASSWORD",
+				Destination: &subcmd.FlagNewPassword,
+			},
+		},
+		Action:			subcmd.UpdatePassword,
 	}
 }

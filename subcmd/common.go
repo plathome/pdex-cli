@@ -39,6 +39,8 @@ var (
 	FlagMsgId 			string
 	FlagUsername 		string
 	FlagPassword 		string
+	FlagCurrentPassword	string
+	FlagNewPassword		string
 )
 
 func GetUtils(urlstr string) (string, error) {
@@ -397,6 +399,36 @@ func CreateUserApi(urlstr string, accesstoken string, username string, password 
    }
    s := v.Encode()
    req, err := http.NewRequest("POST", urlstr, strings.NewReader(s))
+   if err != nil {
+   	fmt.Printf("http.NewRequest() error: %v\n", err)
+   	return
+   }
+   req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+   req.Header.Add("Authorization", "Bearer " + accesstoken)
+   c := &http.Client{}
+   resp, err := c.Do(req)
+   if err != nil {
+   	fmt.Printf("http.Do() error: %v\n", err)
+   	return
+   }
+   defer resp.Body.Close()
+   data, err := ioutil.ReadAll(resp.Body)
+   if err != nil {
+   	fmt.Printf("error: %v\n", err)
+   	return
+   }
+   fmt.Printf("%v\n", string(data))
+}
+
+func UpdatePasswordApi(urlstr string, accesstoken string, current_password string, new_password string) {
+   parameters 	:=	[]string{"current_password", "new_password"}
+   values 		:=	[]string{current_password, new_password}
+   v := url.Values{}
+   for i := range parameters {
+   	v.Set(parameters[i], values[i])
+   }
+   s := v.Encode()
+   req, err := http.NewRequest("PUT", urlstr, strings.NewReader(s))
    if err != nil {
    	fmt.Printf("http.NewRequest() error: %v\n", err)
    	return
