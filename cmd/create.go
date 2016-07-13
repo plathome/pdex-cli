@@ -17,6 +17,7 @@ func CreateCmd() cli.Command {
 		subCmdCreateApp(),
 		subCmdCreateDevice(),
 		subCmdCreateChannel(),
+		subCmdCreateSession(),
 	}
 	return command
 }
@@ -87,5 +88,15 @@ func subCmdCreateChannel() cli.Command {
 			},
 		},
 		Action: subcmd.CreateChannel,
+	}
+}
+
+func subCmdCreateSession() cli.Command {
+	return cli.Command {
+		Name:        	"sessions",
+		Aliases: 		[]string{"ses"},
+		Description: 	"create new session",
+		Usage:       	"create session",
+		Action:      	subcmd.CreateSession,
 	}
 }

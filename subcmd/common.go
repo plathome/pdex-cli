@@ -386,6 +386,30 @@ func ListApi(urlstr string, accesstoken string) {
 	fmt.Printf("%v\n", string(data))
 }
 
+func SessionCreateApi(urlstr string, accesstoken string) {
+	v := url.Values{}
+	s := v.Encode()
+	req, err := http.NewRequest("PUT", urlstr, strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http put request erros: %v\n", err)
+		return
+	}
+	req.Header.Add("Authorization", "Bearer " + accesstoken)
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n",  err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
+}
+
 func ListApiReturn(urlstr string, accesstoken string) (body string) {
 	v := url.Values{}
 	s := v.Encode()

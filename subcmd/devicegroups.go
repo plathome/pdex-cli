@@ -44,3 +44,14 @@ func CreateDG(context *cli.Context) error {
 	CreateApi(fmt.Sprintf("%s/%s", conf.PdexUrl, "devicegroups") , conf.AccessKey,  "", "")
 	return nil
 }
+
+func CreateSession(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Error: Failed in reading the config file. \n")
+		os.Exit(1)
+	}
+	SessionCreateApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"auth/token"), conf.AccessKey)
+	return nil
+}
