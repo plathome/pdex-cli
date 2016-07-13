@@ -19,6 +19,7 @@ func main() {
 		cmd.UtilsCmd(),
 		cmd.ShowCmd(),
 		cmd.CreateCmd(),
+		cmd.UpdateCmd(),
 	}
 	app.Run(os.Args)
 }

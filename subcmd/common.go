@@ -37,6 +37,8 @@ var (
 	FlagDeviceId 		string
 	FlagAppId 			string
 	FlagMsgId 			string
+	FlagUsername 		string
+	FlagPassword 		string
 )
 
 func GetUtils(urlstr string) (string, error) {
@@ -386,7 +388,37 @@ func ListApi(urlstr string, accesstoken string) {
 	fmt.Printf("%v\n", string(data))
 }
 
-func SessionCreateApi(urlstr string, accesstoken string) {
+func CreateUserApi(urlstr string, accesstoken string, username string, password string) {
+   parameters 	:=	[]string{"username", "password"}
+   values 		:=	[]string{username, password}
+   v := url.Values{}
+   for i := range parameters {
+   	v.Set(parameters[i], values[i])
+   }
+   s := v.Encode()
+   req, err := http.NewRequest("POST", urlstr, strings.NewReader(s))
+   if err != nil {
+   	fmt.Printf("http.NewRequest() error: %v\n", err)
+   	return
+   }
+   req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+   req.Header.Add("Authorization", "Bearer " + accesstoken)
+   c := &http.Client{}
+   resp, err := c.Do(req)
+   if err != nil {
+   	fmt.Printf("http.Do() error: %v\n", err)
+   	return
+   }
+   defer resp.Body.Close()
+   data, err := ioutil.ReadAll(resp.Body)
+   if err != nil {
+   	fmt.Printf("error: %v\n", err)
+   	return
+   }
+   fmt.Printf("%v\n", string(data))
+}
+
+func UpdateSessionApi(urlstr string, accesstoken string) {
 	v := url.Values{}
 	s := v.Encode()
 	req, err := http.NewRequest("PUT", urlstr, strings.NewReader(s))

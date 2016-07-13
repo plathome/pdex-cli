@@ -45,13 +45,45 @@ func CreateDG(context *cli.Context) error {
 	return nil
 }
 
-func CreateSession(context *cli.Context) error {
+func UpdateSession(context *cli.Context) error {
 	SetActingProfile()
 	conf, err := ReadConfigs()
 	if err != nil {
 		fmt.Fprint(os.Stderr, "Error: Failed in reading the config file. \n")
 		os.Exit(1)
 	}
-	SessionCreateApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"auth/token"), conf.AccessKey)
+	UpdateSessionApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"auth/token"), conf.AccessKey)
+	return nil
+}
+
+func CreateUser(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagUsername == "" || FlagPassword == "" {
+		fmt.Println("create session --username USERNAME --password PASSWORD")
+		return nil
+	} else {
+		CreateUserApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"users"), conf.AccessKey, FlagUsername, FlagPassword)
+	}
+	return nil
+}
+
+func CreateSession(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagUsername == "" || FlagPassword == "" {
+		fmt.Println("create session --username USERNAME --password PASSWORD")
+		return nil
+	} else {
+		CreateUserApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"auth/token"), conf.AccessKey, FlagUsername, FlagPassword)
+	}
 	return nil
 }
