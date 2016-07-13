@@ -10,7 +10,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Usage = "The cli tool for pd-exchange"
-	app.Version = "0.1.5"
+	app.Version = "0.1.6"
 	app.Commands = []cli.Command {
 		cmd.ListCmd(),
 		cmd.SendCmd(),
