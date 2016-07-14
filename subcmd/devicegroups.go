@@ -72,6 +72,22 @@ func UpdatePassword(context *cli.Context) error {
 	return nil
 }
 
+func UpdateApp(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagAppNameSuffix == "" || FlagAppId == "" {
+		fmt.Println("update apps --app-name-suffix APP-NAME-SIFFIX --app-id APPID")
+		return nil
+	} else {
+		UpdateAppApi(fmt.Sprintf("%s/%s/%s",conf.PdexUrl,"apps",FlagAppId), conf.AccessKey, FlagAppNameSuffix)
+	}
+	return nil
+}
+
 func CreateUser(context *cli.Context) error {
 	SetActingProfile()
 	conf, err := ReadConfigs()

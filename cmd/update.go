@@ -15,6 +15,7 @@ func UpdateCmd() cli.Command {
 	command.Subcommands = []cli.Command{
 		subCmdUpdateSession(),
 		subCmdUpdatePassword(),
+		subCmdUpdateApp(),
 	}
 	return command
 }
@@ -50,5 +51,28 @@ func subCmdUpdatePassword() cli.Command {
 			},
 		},
 		Action:			subcmd.UpdatePassword,
+	}
+}
+
+func subCmdUpdateApp() cli.Command {
+	return cli.Command {
+		Name:			"apps",
+		Description:	"update apps",
+		Usage:			"update apps --app-name-suffix APP-NAME-SIFFIX --app-id APPID",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "app-name-suffix",
+				Value:       "",
+				Usage:       "update apps --app-name-suffix APP-NAME-SIFFIX --app-id APPID",
+				Destination: &subcmd.FlagAppNameSuffix,
+			},
+			cli.StringFlag{
+				Name:        "app-id",
+				Value:       "",
+				Usage:       "update apps --app-name-suffix APP-NAME-SIFFIX --app-id APPID",
+				Destination: &subcmd.FlagAppId,
+			},
+		},
+		Action:			subcmd.UpdateApp,
 	}
 }

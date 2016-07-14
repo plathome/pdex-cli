@@ -20,6 +20,7 @@ func main() {
 		cmd.ShowCmd(),
 		cmd.CreateCmd(),
 		cmd.UpdateCmd(),
+		cmd.DeleteCmd(),
 	}
 	app.Run(os.Args)
 }

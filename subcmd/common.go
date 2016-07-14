@@ -41,6 +41,7 @@ var (
 	FlagPassword 		string
 	FlagCurrentPassword	string
 	FlagNewPassword		string
+	FlagConfirmation 	string
 )
 
 func GetUtils(urlstr string) (string, error) {
@@ -58,25 +59,33 @@ func GetUtils(urlstr string) (string, error) {
 	return string(htmlData), nil
 }
 
-func HmacDigest(urlstr string, secretkey string, deid string) {
-	Hmac(urlstr, []string{"key","message"} , []string{secretkey,deid} )
+func HmacCommandTask(urlstr string, accesskey string, deid string) {
+	dgparts 	:= strings.Split(deid,".")
+	devicegroup := dgparts[0] + "." + dgparts[1]
+	secretkey 	:= GetSecretKey(urlstr + "/devicegroups/" + devicegroup, accesskey)
+	result, _ 	:= HmacDigest(urlstr, secretkey, deid)
+	fmt.Println(result)
+}
+
+func HmacDigest(urlstr string, secretkey string, deid string) (digestkey string, err error) {
+	return Hmac(urlstr, []string{"key","message"} , []string{secretkey,deid} )
 }
 
 func Hmac(link string, parameters []string, values []string) (body string, err error) {
-   data := url.Values{}
-   for i := range parameters {
-      data.Set(parameters[i], values[i])
-   }
-   resp, err := http.PostForm(link + "/utils/hmac", data)
-   if err != nil {
-      return "", err
-   }
-   defer resp.Body.Close()
-   htmlData, err := ioutil.ReadAll(resp.Body)
-   if err != nil {
+	data := url.Values{}
+	for i := range parameters {
+		data.Set(parameters[i], values[i])
+	}
+	resp, err := http.PostForm(link + "/utils/hmac", data)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	htmlData, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
-    }
+	}
     return string(htmlData), nil
 }
 
@@ -286,36 +295,10 @@ func GetAppToken(urlstr string, accesstoken string, appid string) (body string) 
 	return key
 }
 
-func ReadMessage(sourcetype string, urlstr string, typeid string, apptoken string) {
+func ReadLatestMessage(urlstr string, apptoken string) {
 	v := url.Values{}
 	s := v.Encode()
-	req, err := http.NewRequest("GET", urlstr + "/" + sourcetype + "/" + typeid + "/messages", strings.NewReader(s))
-	if err != nil {
-		fmt.Printf("http.NewRequest() error: %v\n", err)
-		return
-	}
-	req.Header.Add("Authorization", "Bearer " + apptoken)
-
-	c := &http.Client{}
-	resp, err := c.Do(req)
-	if err != nil {
-		fmt.Printf("http.Do() error: %v\n", err)
-		return
-	}
-	defer resp.Body.Close()
-
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		return
-	}
-	fmt.Printf("%v\n", string(data))
-}
-
-func ReadSingleMessage(sourcetype string, urlstr string, typeid string, apptoken string, msgid string) {
-	v := url.Values{}
-	s := v.Encode()
-	req, err := http.NewRequest("GET", urlstr + "/" + sourcetype + "/" + typeid + "/messages/" + msgid, strings.NewReader(s))
+	req, err := http.NewRequest("GET", urlstr, strings.NewReader(s))
 	if err != nil {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
@@ -423,6 +406,36 @@ func CreateUserApi(urlstr string, accesstoken string, username string, password 
 func UpdatePasswordApi(urlstr string, accesstoken string, current_password string, new_password string) {
    parameters 	:=	[]string{"current_password", "new_password"}
    values 		:=	[]string{current_password, new_password}
+   v := url.Values{}
+   for i := range parameters {
+   	v.Set(parameters[i], values[i])
+   }
+   s := v.Encode()
+   req, err := http.NewRequest("PUT", urlstr, strings.NewReader(s))
+   if err != nil {
+   	fmt.Printf("http.NewRequest() error: %v\n", err)
+   	return
+   }
+   req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+   req.Header.Add("Authorization", "Bearer " + accesstoken)
+   c := &http.Client{}
+   resp, err := c.Do(req)
+   if err != nil {
+   	fmt.Printf("http.Do() error: %v\n", err)
+   	return
+   }
+   defer resp.Body.Close()
+   data, err := ioutil.ReadAll(resp.Body)
+   if err != nil {
+   	fmt.Printf("error: %v\n", err)
+   	return
+   }
+   fmt.Printf("%v\n", string(data))
+}
+
+func UpdateAppApi(urlstr string, accesstoken string, appnamesuffix string) {
+   parameters 	:=	[]string{"app_name_suffix"}
+   values 		:=	[]string{appnamesuffix}
    v := url.Values{}
    for i := range parameters {
    	v.Set(parameters[i], values[i])
@@ -586,6 +599,64 @@ func ReadCommandsApi(urlstr string, deid string, accesstoken string, commandstr 
 	fmt.Printf("%v\n", string(data))
 }
 
+//curl -w "\n" -H "AUTHORIZATION: Bearer c15722ed5cdb" -X DELETE http://localhost:9292/api/v1/me?confirm=true
+func DeleteAccountTask(urlstr string, accesskey string, confirm string) {
+	parameters 		:=	[]string{"confirm"}
+	values 			:=	[]string{confirm}
+	if confirm == "true" {
+		DeleteApi(fmt.Sprintf("%s/%s", urlstr, "me"), accesskey, parameters, values, "DELETE")
+	} else {
+		fmt.Println("Please provide true for delete confirmation")
+	}
+}
+
+func DeleteChannelTask(urlstr string, accesskey string, deid string, channelid string, confirm string) {
+	dgparts 		:= strings.Split(deid,".")
+	devicegroup 	:= dgparts[0] + "." + dgparts[1]
+	secretkey 		:= GetSecretKey(urlstr + "/devicegroups/" + devicegroup , accesskey)
+	digestkey, err 	:= HmacDigest(urlstr, secretkey, deid)
+	jd 				:= new(DigestData)
+	err 			= json.Unmarshal([]byte(digestkey), &jd)
+	if err != nil {
+		fmt.Println(err)
+	}
+	parameters 		:=	[]string{"confirm"}
+	values 			:=	[]string{confirm}
+	if confirm == "true" {
+		DeleteApi(fmt.Sprintf("%s/%s/%s", urlstr, "channels", channelid), jd.Digest, parameters, values, "DELETE")
+	} else {
+		fmt.Println("Please provide true for delete confirmation")
+	}
+}
+
+func DeleteApi(urlstr string, key string, parameters []string, values []string, method string) {
+	v := url.Values{}
+	for i := range parameters {
+		v.Set(parameters[i], values[i])
+	}
+	s := v.Encode()
+	req, err := http.NewRequest(method, urlstr, strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+	req.Header.Add("Authorization", "Bearer " + key)
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
+}
+
 func SendCommandToAllChannels(urlstr string, accesskey string, deid string) (body string, err error) {
    dgparts 		:= strings.Split(deid,".")
    devicegroup  := dgparts[0] + "." + dgparts[1]
@@ -689,3 +760,12 @@ func FileExists(filename string) bool {
 func AtLeastTwo(a bool, b bool, c bool) bool {
 	return a && (b || c) || (b && c)
 }
+
+func StringConcat(array []string) string {
+	var buff bytes.Buffer
+	for _, element := range array {
+		buff.WriteString(element)
+	}
+	return buff.String()
+}
+
