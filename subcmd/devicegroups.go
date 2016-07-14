@@ -44,3 +44,78 @@ func CreateDG(context *cli.Context) error {
 	CreateApi(fmt.Sprintf("%s/%s", conf.PdexUrl, "devicegroups") , conf.AccessKey,  "", "")
 	return nil
 }
+
+func UpdateSession(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Error: Failed in reading the config file. \n")
+		os.Exit(1)
+	}
+	UpdateSessionApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"auth/token"), conf.AccessKey)
+	return nil
+}
+
+func UpdatePassword(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagCurrentPassword == "" || FlagNewPassword == "" {
+		fmt.Println("update password --current-password CUR-PASSWD --new-password PASSWORD")
+		return nil
+	} else {
+		UpdatePasswordApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"auth/secret"), conf.AccessKey, FlagCurrentPassword, FlagNewPassword)
+	}
+	return nil
+}
+
+func UpdateApp(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagAppNameSuffix == "" || FlagAppId == "" {
+		fmt.Println("update apps --app-name-suffix APP-NAME-SIFFIX --app-id APPID")
+		return nil
+	} else {
+		UpdateAppApi(fmt.Sprintf("%s/%s/%s",conf.PdexUrl,"apps",FlagAppId), conf.AccessKey, FlagAppNameSuffix)
+	}
+	return nil
+}
+
+func CreateUser(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagUsername == "" || FlagPassword == "" {
+		fmt.Println("create session --username USERNAME --password PASSWORD")
+		return nil
+	} else {
+		CreateUserApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"users"), conf.AccessKey, FlagUsername, FlagPassword)
+	}
+	return nil
+}
+
+func CreateSession(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagUsername == "" || FlagPassword == "" {
+		fmt.Println("create session --username USERNAME --password PASSWORD")
+		return nil
+	} else {
+		CreateUserApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"auth/token"), conf.AccessKey, FlagUsername, FlagPassword)
+	}
+	return nil
+}

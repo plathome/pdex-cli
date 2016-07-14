@@ -41,3 +41,18 @@ func ReadCommands(context *cli.Context) error {
 	}
 	return nil
 }
+
+func ReadLatestCommand(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+		os.Exit(1)
+	}
+	if FlagDeviceId == "" {
+		fmt.Println("pdex read command-latest --deid DEVICE_ID")
+	} else {
+		ReadCommandsApi(conf.PdexUrl, FlagDeviceId, conf.AccessKey, "commands/latest")
+	}
+	return nil
+}

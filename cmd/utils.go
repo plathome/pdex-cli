@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/urfave/cli"
 	"bytes"
+	"github.com/urfave/cli"
 	"github.com/plathome/pdex-cli/subcmd"
 //	"../subcmd"
 )
@@ -11,12 +11,13 @@ func UtilsCmd() cli.Command {
 	command := cli.Command {
 		Name:  		"util",
 		Aliases: 	[]string{"u"},
-		Usage: 		"util ping,version,changelog",
+		Usage: 		"util ping, version, changelog, hmac",
 	}
 	command.Subcommands = []cli.Command{
 		subCmdPing(),
 		subCmdVersion(),
 		subCmdChangelog(),
+		subCmdHmac(),
 	}
 	return command
 }
@@ -48,6 +49,23 @@ func subCmdChangelog() cli.Command {
 	}
 }
 
+func subCmdHmac() cli.Command {
+	return cli.Command{
+		Name:        "hmac",
+		Description: "Digestkey generator",
+		Usage:       "util hmac --deid DEVICE-ID",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid",
+				Value:       "",
+				Usage:       "util hmac --deid DEVICE-ID",
+				Destination: &subcmd.FlagDeviceId,
+			},
+		},
+		Action:      subcmd.HmacCommand,
+	}
+}
+
 func StringConcat(array []string) string {
 	var buff bytes.Buffer
 	for _, element := range array {
@@ -55,4 +73,3 @@ func StringConcat(array []string) string {
 	}
 	return buff.String()
 }
-

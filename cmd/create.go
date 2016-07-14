@@ -17,6 +17,8 @@ func CreateCmd() cli.Command {
 		subCmdCreateApp(),
 		subCmdCreateDevice(),
 		subCmdCreateChannel(),
+		subCmdCreateSession(),
+		subCmdCreateUser(),
 	}
 	return command
 }
@@ -87,5 +89,53 @@ func subCmdCreateChannel() cli.Command {
 			},
 		},
 		Action: subcmd.CreateChannel,
+	}
+}
+
+func subCmdCreateSession() cli.Command {
+	return cli.Command {
+		Name:        	"sessions",
+		Aliases: 		[]string{"ses"},
+		Description: 	"create new session",
+		Usage:       	"create session  --username USERNAME --password PASSWORD",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "username",
+				Value:       "",
+				Usage:       "create session --username USERNAME --password PASSWORD",
+				Destination: &subcmd.FlagUsername,
+			},
+			cli.StringFlag{
+				Name:        "password",
+				Value:       "",
+				Usage:       "create session --username USERNAME --password PASSWORD",
+				Destination: &subcmd.FlagPassword,
+			},
+		},
+		Action:      	subcmd.CreateSession,
+	}
+}
+
+func subCmdCreateUser() cli.Command {
+	return cli.Command {
+		Name:			"users",
+		Aliases:		[]string{"usr"},
+		Description:	"create new user",
+		Usage:			"create user --username USERNAME --password PASSWORD",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "username",
+				Value:       "",
+				Usage:       "create user --username USERNAME --password PASSWORD",
+				Destination: &subcmd.FlagUsername,
+			},
+			cli.StringFlag{
+				Name:        "password",
+				Value:       "",
+				Usage:       "create user --username USERNAME --password PASSWORD",
+				Destination: &subcmd.FlagPassword,
+			},
+		},
+		Action:			subcmd.CreateUser,
 	}
 }

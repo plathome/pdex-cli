@@ -2,7 +2,7 @@
 
 setup() {
   export PDEX_END_POINT_URL=http://localhost:9292/api/v1
-  export PDEX_ACCESS_KEY=573575645463
+  export PDEX_ACCESS_KEY=c15722ed5cd1
   pdex="bin/pdex"
 }
 
@@ -72,6 +72,14 @@ read_message() {
 	send_message
 	CMD="pdex read msg --app-id $APP"
 	READ=$(eval $CMD | jq .count)
+	MSGID=$(eval $CMD | jq '.messages[0].msgid')
+}
+
+# Read single message
+read_single_message() {
+	read_message
+	CMD="pdex read msg --app-id $APP --msgid $MSGID"
+	READ=$(eval $CMD)
 }
 
 # send command
@@ -86,4 +94,65 @@ read_command() {
 	send_command
 	CMD="pdex read cmd --deid $DE"
 	READ=$(eval $CMD | jq .count)
+	CMDID=$(eval $CMD | jq '.commands[0].cmdid')
 }
+
+# command contetnt check
+read_single_command() {
+	read_command
+	CMD="pdex read cmd --deid $DE --cmdid $CMDID"
+	READ=$(eval $CMD)
+}
+
+# send bulk commands
+send_command_bulk() {
+  create_channel
+  CMD="pdex send cmd --channel-id $CHID --app-id $APP 'test command sending'"
+  for i in `seq 1 10`;
+  do
+	  XFER=$(eval $CMD)
+  done
+}
+
+# send bulk messages
+send_messages_bulk() {
+	create_channel
+  	CMD="pdex send msg --deid $DE 'message send for test'"
+	for i in `seq 1 10`;
+	do
+	  XFER=$(eval $CMD)
+	done
+}
+
+# read bulk messages
+read_messages_bulk() {
+	send_messages_bulk
+	CMD="pdex read msg --app-id $APP"
+	READ=$(eval $CMD | jq .count)
+}
+
+# send bulk commands
+send_commands_bulk() {
+  create_channel
+  CMD="pdex send cmd --channel-id $CHID --app-id $APP 'test command sending'"
+  for i in `seq 1 10`;
+  do
+	  XFER=$(eval $CMD)
+	  echo $XFER
+  done
+}
+
+# read bulk commands
+read_commands_bulk() {
+	send_commands_bulk
+	CMD="pdex read cmd --deid $DE"
+	READ=$(eval $CMD | jq .count)
+}
+
+# app name change
+
+# delete channel
+
+# create after delete and send message then read message
+
+#

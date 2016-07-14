@@ -15,6 +15,8 @@ func ReadCmd() cli.Command {
 	command.Subcommands = []cli.Command{
 		subCmdReadCommands(),
 		subCmdReadMessages(),
+		subCmdReadLatestCommands(),
+		subCmdReadLatestMessages(),
 	}
 	return command
 }
@@ -40,6 +42,24 @@ func subCmdReadCommands() cli.Command {
 			},
 		},
 		Action:      subcmd.ReadCommands,
+	}
+}
+
+func subCmdReadLatestCommands() cli.Command {
+	return cli.Command {
+		Name:        	"commands-latest",
+		Aliases: 		[]string{"cmd-latest"},
+		Description: 	"read latest commands from channels",
+		Usage:       	"read commands-latest",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid",
+				Value:       "",
+				Usage:       "read cmd-latest --deid=DEVICE_ID",
+				Destination: &subcmd.FlagDeviceId,
+			},
+		},
+		Action:      subcmd.ReadLatestCommand,
 	}
 }
 
@@ -70,5 +90,29 @@ func subCmdReadMessages() cli.Command {
 			},
 		},
 		Action:      subcmd.ReadMessages,
+	}
+}
+
+func subCmdReadLatestMessages() cli.Command {
+	return cli.Command{
+		Name:        	"messages-latest",
+		Aliases: 		[]string{"msg-latest"},
+		Description: 	"read latest message from devices",
+		Usage:       	"read msg-latest",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "app-id",
+				Value:       "",
+				Usage:       "read msg-latest --app-id=APP_ID",
+				Destination: &subcmd.FlagAppId,
+			},
+			cli.StringFlag{
+				Name:        "channel-id",
+				Value:       "",
+				Usage:       "read msg-latest --channel-id=CHANNEL_ID --msgid=MSG_ID",
+				Destination: &subcmd.FlagChannelId,
+			},
+		},
+		Action:      subcmd.ReadLatestMessages,
 	}
 }

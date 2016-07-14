@@ -37,21 +37,43 @@ func ReadMessages(context *cli.Context) error {
 	}
 	if FlagAppId != "" && FlagMsgId == "" && FlagChannelId == "" {
 		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
-		ReadMessage("apps", conf.PdexUrl, FlagAppId, apptoken)
+		ReadLatestMessage(fmt.Sprintf("%s/%s/%s/%s",conf.PdexUrl,"apps",FlagAppId,"messages"),apptoken)
 	}
 	if FlagAppId != "" && FlagMsgId != "" && FlagChannelId == "" {
 		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
-		ReadSingleMessage("apps", conf.PdexUrl, FlagAppId, apptoken, FlagMsgId)
+		ReadLatestMessage(fmt.Sprintf("%s/%s/%s/%s/%s",conf.PdexUrl,"apps",FlagAppId,"messages",FlagMsgId),apptoken)
 	}
 
 	if FlagAppId != "" && FlagMsgId == "" && FlagChannelId != "" {
 		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
-		ReadMessage("channels", conf.PdexUrl, FlagChannelId, apptoken)
+		ReadLatestMessage(fmt.Sprintf("%s/%s/%s/%s",conf.PdexUrl,"channels",FlagChannelId,"messages"),apptoken)
 	}
 	if FlagAppId != "" && FlagMsgId != "" && FlagChannelId != "" {
 		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
-		ReadSingleMessage("channels", conf.PdexUrl, FlagChannelId, apptoken, FlagMsgId)
+		ReadLatestMessage(fmt.Sprintf("%s/%s/%s/%s/%s",conf.PdexUrl,"channels",FlagChannelId,"messages",FlagMsgId),apptoken)
 	}
 
+	return nil
+}
+
+func ReadLatestMessages(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+		os.Exit(1)
+	}
+	if FlagAppId == "" && FlagChannelId == "" {
+		fmt.Println("pdex read msg-latest --app-id APP_ID")
+		fmt.Println("pdex read msg-latest --channel-id CHANNEL_ID --app-id APP_ID")
+	}
+	if FlagAppId != "" && FlagChannelId == "" {
+		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
+		ReadLatestMessage(fmt.Sprintf("%s/%s/%s/%s",conf.PdexUrl,"apps",FlagAppId,"messages/latest"),apptoken)
+	}
+	if FlagAppId != "" && FlagChannelId != "" {
+		apptoken := GetAppToken(conf.PdexUrl, conf.AccessKey, FlagAppId)
+		ReadLatestMessage(fmt.Sprintf("%s/%s/%s/%s",conf.PdexUrl,"channels",FlagChannelId,"messages/latest"),apptoken)
+	}
 	return nil
 }
