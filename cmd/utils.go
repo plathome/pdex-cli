@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"github.com/urfave/cli"
 //	"github.com/plathome/pdex-cli/subcmd"
 	"../subcmd"
@@ -63,4 +64,12 @@ func subCmdHmac() cli.Command {
 		},
 		Action:      subcmd.HmacCommand,
 	}
+}
+
+func StringConcat(array []string) string {
+	var buff bytes.Buffer
+	for _, element := range array {
+		buff.WriteString(element)
+	}
+	return buff.String()
 }

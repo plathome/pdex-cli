@@ -80,6 +80,11 @@ load test_helper
   [[ $READ -eq 1 ]]
 }
 
+@test "read single message" {
+  read_single_message
+  [[ $READ == "message send for test" ]]
+}
+
 @test "send command" {
   send_command
   [[ $XFER == *"transaction_id"* ]]
@@ -88,4 +93,19 @@ load test_helper
 @test "read commands" {
   read_command
   [[ READ -eq 1 ]]
+}
+
+@test "read single command" {
+  read_single_command
+  [[ $READ == "test command sending" ]]
+}
+
+@test "sending bulk commands and then read" {
+  read_commands_bulk
+  [[ $READ -eq 10 ]]
+}
+
+@test "sending bulk messages and then read" {
+  read_messages_bulk
+  [[ $READ -eq 10 ]]
 }
