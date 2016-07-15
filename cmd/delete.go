@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/subcmd"
-//	"../subcmd"
+//	"github.com/plathome/pdex-cli/subcmd"
+	"../subcmd"
 )
 
 func DeleteCmd() cli.Command {
@@ -14,6 +14,7 @@ func DeleteCmd() cli.Command {
 	command.Subcommands = []cli.Command{
 		subCmdDeleteChannel(),
 		subCmdDeleteAccount(),
+		subCmdDeleteDgTagKey(),
 	}
 	return command
 }
@@ -65,3 +66,27 @@ func subCmdDeleteAccount() cli.Command {
 		Action:      	subcmd.DeleteAccount,
 	}
 }
+
+func subCmdDeleteDgTagKey() cli.Command {
+	return cli.Command{
+		Name:        "dg-tags",
+		Description: "delete tag key of devicegroup",
+		Usage:       "delete dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid-prefix",
+				Value:       "",
+				Usage:       "delete dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY",
+				Destination: &subcmd.FlagDeviceGroup,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "delete dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY",
+				Destination: &subcmd.FlagKey,
+			},
+		},
+		Action:      subcmd.DeleteDgTagKey,
+	}
+}
+

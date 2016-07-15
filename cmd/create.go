@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/subcmd"
-//	"../subcmd"
+//	"github.com/plathome/pdex-cli/subcmd"
+	"../subcmd"
 )
 
 func CreateCmd() cli.Command {
@@ -19,6 +19,8 @@ func CreateCmd() cli.Command {
 		subCmdCreateChannel(),
 		subCmdCreateSession(),
 		subCmdCreateUser(),
+		subCmdCreateDgTags(),
+		subCmdCreateDeviceTags(),
 	}
 	return command
 }
@@ -137,5 +139,63 @@ func subCmdCreateUser() cli.Command {
 			},
 		},
 		Action:			subcmd.CreateUser,
+	}
+}
+
+func subCmdCreateDgTags() cli.Command {
+	return cli.Command {
+		Name:			"dg-tags",
+		Description:	"create new devicegroup tags",
+		Usage:			"create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid-prefix",
+				Value:       "",
+				Usage:       "create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagDeviceGroup,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.CreateDgTags,
+	}
+}
+
+func subCmdCreateDeviceTags() cli.Command {
+	return cli.Command {
+		Name:			"device-tags",
+		Description:	"create new device tags",
+		Usage:			"create device-tags --deid DEVICE-ID --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid",
+				Value:       "",
+				Usage:       "create device-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagDeviceId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "create device-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "create device-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.CreateDeviceTags,
 	}
 }

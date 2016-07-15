@@ -88,6 +88,24 @@ func UpdateApp(context *cli.Context) error {
 	return nil
 }
 
+func UpdateDgTag(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateUser context \n")
+		os.Exit(1)
+	}
+	if FlagDeviceGroup != "" && FlagKey != "" && FlagValue != "" {
+		parameters 	:=	[]string{"value"}
+		values 		:=	[]string{FlagValue}
+		UpdateTagApi(fmt.Sprintf("%s/%s/%s/%s/%s",conf.PdexUrl,"devicegroups",FlagDeviceGroup,"tags",FlagKey), conf.AccessKey, parameters, values)
+	} else {
+		fmt.Println("update dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE")
+		return nil
+	}
+	return nil
+}
+
 func CreateUser(context *cli.Context) error {
 	SetActingProfile()
 	conf, err := ReadConfigs()
@@ -100,6 +118,36 @@ func CreateUser(context *cli.Context) error {
 		return nil
 	} else {
 		CreateUserApi(fmt.Sprintf("%s/%s",conf.PdexUrl,"users"), conf.AccessKey, FlagUsername, FlagPassword)
+	}
+	return nil
+}
+
+func CreateDgTags(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateDgTags Context \n")
+		os.Exit(1)
+	}
+	if FlagKey != "" && FlagValue != "" && FlagDeviceGroup != "" {
+		CreateApi(fmt.Sprintf("%s/%s/%s/%s/%s", conf.PdexUrl, "devicegroups", FlagDeviceGroup, "tags", FlagKey) , conf.AccessKey,  "value", FlagValue)
+	} else {
+		fmt.Println("create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE")
+	}
+	return nil
+}
+
+func CreateDeviceTags(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the CreateDgTags Context \n")
+		os.Exit(1)
+	}
+	if FlagKey != "" && FlagValue != "" && FlagDeviceId != "" {
+		CreateDeviceTagsApi(conf.PdexUrl, FlagDeviceId, conf.AccessKey, FlagKey, FlagValue)
+	} else {
+		fmt.Println("create device-tags --deid DEVICE-ID --key KEY --value VALUE")
 	}
 	return nil
 }

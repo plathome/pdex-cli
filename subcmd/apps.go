@@ -6,6 +6,25 @@ import (
 	"github.com/urfave/cli"
 )
 
+func ListDgTagKey(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
+		os.Exit(1)
+	}
+	if FlagDeviceGroup != "" && FlagKey == "" {
+		ListApi(fmt.Sprintf("%s/%s/%s/%s", conf.PdexUrl, "devicegroups", FlagDeviceGroup, "tags"), conf.AccessKey)
+	} else if FlagDeviceGroup != "" && FlagKey != "" {
+		ListApi(fmt.Sprintf("%s/%s/%s/%s/%s", conf.PdexUrl, "devicegroups", FlagDeviceGroup, "tags", FlagKey), conf.AccessKey)
+	} else {
+		fmt.Println("list dg-tags --deid-prefix DEVICE-ID-PREFIX")
+		fmt.Println("list dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY")
+		return nil
+	}
+	return nil
+}
+
 func ListApps(context *cli.Context) error {
 	SetActingProfile()
 	conf, err := ReadConfigs()

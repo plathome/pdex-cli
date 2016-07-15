@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/subcmd"
-//	"../subcmd"
+//	"github.com/plathome/pdex-cli/subcmd"
+	"../subcmd"
 )
 
 func UpdateCmd() cli.Command {
@@ -16,6 +16,7 @@ func UpdateCmd() cli.Command {
 		subCmdUpdateSession(),
 		subCmdUpdatePassword(),
 		subCmdUpdateApp(),
+		subCmdUpdateDgTag(),
 	}
 	return command
 }
@@ -74,5 +75,34 @@ func subCmdUpdateApp() cli.Command {
 			},
 		},
 		Action:			subcmd.UpdateApp,
+	}
+}
+
+func subCmdUpdateDgTag() cli.Command {
+	return cli.Command {
+		Name:			"dg-tags",
+		Description:	"update dg-tags",
+		Usage:			"update dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid-prefix",
+				Value:       "",
+				Usage:       "update dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagDeviceGroup,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "update dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "update dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.UpdateDgTag,
 	}
 }

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/urfave/cli"
-	"github.com/plathome/pdex-cli/subcmd"
-//	"../subcmd"
+//	"github.com/plathome/pdex-cli/subcmd"
+	"../subcmd"
 )
 
 func ListCmd() cli.Command {
@@ -17,6 +17,7 @@ func ListCmd() cli.Command {
 		subCmdDevices(),
 		subCmdChannels(),
 		subCmdApps(),
+		subCmdDgTagKey(),
 	}
 	return command
 }
@@ -73,5 +74,28 @@ func subCmdApps() cli.Command {
 		Description: "get applications list.",
 		Usage:       "list apps",
 		Action:      subcmd.ListApps,
+	}
+}
+
+func subCmdDgTagKey() cli.Command {
+	return cli.Command{
+		Name:        "dg-tags",
+		Description: "get tag list of devicegroup",
+		Usage:       "list dg-tags --deid-prefix DEVICE-ID-PREFIX",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid-prefix",
+				Value:       "",
+				Usage:       "list dg-tags --deid-prefix DEVICE-ID-PREFIX",
+				Destination: &subcmd.FlagDeviceGroup,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "list dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY",
+				Destination: &subcmd.FlagKey,
+			},
+		},
+		Action:      subcmd.ListDgTagKey,
 	}
 }
