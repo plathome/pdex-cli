@@ -17,6 +17,8 @@ func UpdateCmd() cli.Command {
 		subCmdUpdatePassword(),
 		subCmdUpdateApp(),
 		subCmdUpdateDgTag(),
+		subCmdUpdateDeviceTag(),
+		subCmdUpdateAppTag(),
 	}
 	return command
 }
@@ -104,5 +106,63 @@ func subCmdUpdateDgTag() cli.Command {
 			},
 		},
 		Action:			subcmd.UpdateDgTag,
+	}
+}
+
+func subCmdUpdateDeviceTag() cli.Command {
+	return cli.Command {
+		Name:			"de-tags",
+		Description:	"update de-tags",
+		Usage:			"update de-tags --deid DEVICE-ID --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid",
+				Value:       "",
+				Usage:       "update de-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagDeviceId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "update de-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "update de-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.UpdateDeviceTag,
+	}
+}
+
+func subCmdUpdateAppTag() cli.Command {
+	return cli.Command {
+		Name:			"app-tags",
+		Description:	"update app-tags",
+		Usage:			"update app-tags --app-id APP-ID --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "app-id",
+				Value:       "",
+				Usage:       "update app-tags --app-id APP-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagAppId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "update app-tags --app-id APP-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "update app-tags --app-id APP-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.UpdateAppTag,
 	}
 }

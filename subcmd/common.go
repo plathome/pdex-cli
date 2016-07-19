@@ -349,6 +349,24 @@ func ShowMeApi(urlstr string, accesstoken string) {
 	fmt.Printf("%v\n", string(data))
 }
 
+func ListAppsApi(baseurl string, urlstr string, accesskey string, appid string) {
+	apptoken := GetAppToken(baseurl, accesskey, appid)
+	ListApi(urlstr, apptoken)
+}
+
+func ListDevicesApi(baseurl string, urlstr string, accesskey string, deid string) {
+	dgparts 		:= strings.Split(deid,".")
+	devicegroup  	:= dgparts[0] + "." + dgparts[1]
+	secretkey 		:= GetSecretKey(baseurl + "/devicegroups/" + devicegroup , accesskey)
+	digestdata, err := Hmac(baseurl, []string{"key","message"} , []string{secretkey, deid} )
+	jd := new(DigestData)
+    err = json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+	ListApi(urlstr, jd.Digest)
+}
+
 func ListApi(urlstr string, accesstoken string) {
 	v := url.Values{}
 	s := v.Encode()
@@ -433,6 +451,30 @@ func UpdatePasswordApi(urlstr string, accesstoken string, current_password strin
    	return
    }
    fmt.Printf("%v\n", string(data))
+}
+
+func UpdateDeviceTapApi(baseurl string, accesskey string, deid string, tagkey string, value string) {
+	parameters 		:=	[]string{"value"}
+	values 			:=	[]string{value}
+	dgparts 		:= 	strings.Split(deid,".")
+	devicegroup 	:= 	dgparts[0] + "." + dgparts[1]
+	secretkey 		:= 	GetSecretKey(baseurl + "/devicegroups/" + devicegroup , accesskey)
+	digestdata, err := Hmac(baseurl, []string{"key","message"} , []string{secretkey, deid} )
+	jd 				:= new(DigestData)
+    err 			= json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+    updatestr		:= fmt.Sprintf("%s/%s/%s/%s/%s",baseurl,"devices",deid,"tags",tagkey)
+	UpdateTagApi(updatestr, jd.Digest, parameters, values)
+}
+
+func UpdateAppTagApi(baseurl string, accesskey string, appid string, tagkey string, value string) {
+	parameters 	:=	[]string{"value"}
+	values 		:=	[]string{value}
+	apptoken 	:= 	GetAppToken(baseurl, accesskey, appid)
+	updatestr 	:= 	fmt.Sprintf("%s/%s/%s/%s/%s",baseurl,"apps",appid,"tags",tagkey)
+	UpdateTagApi(updatestr, apptoken, parameters, values)
 }
 
 func UpdateTagApi(urlstr string, accesstoken string, parameters []string, values []string) {
@@ -556,6 +598,11 @@ func CreateDeviceTagsApi(urlstr string, deid string, accesskey string, key strin
 	CreateApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "devices", deid, "tags", key) , jd.Digest,  "value", value)
 }
 
+func CreateAppTagsApi(urlstr string, appid string, accesskey string, key string, value string) {
+	apptoken := GetAppToken(urlstr, accesskey, appid)
+	CreateApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "apps", appid, "tags", key) , apptoken,  "value", value)
+}
+
 func CreateApi(urlstr string, accesskey string, key string, value string) {
 	parameters 	:= []string{"value"}
 	values 		:= []string{value}
@@ -674,6 +721,28 @@ func DeleteChannelTask(urlstr string, accesskey string, deid string, channelid s
 	} else {
 		fmt.Println("Please provide true for delete confirmation")
 	}
+}
+
+func DeleteDeviceTagApi(urlstr string, deid string, accesskey string, key string) {
+	dgparts := strings.Split(deid,".")
+	devicegroup  := dgparts[0] + "." + dgparts[1]
+	secretkey := GetSecretKey(urlstr + "/devicegroups/" + devicegroup , accesskey)
+	digestdata, err := Hmac(urlstr, []string{"key","message"} , []string{secretkey, deid} )
+	jd := new(DigestData)
+    err = json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+    parameters 	:=	[]string{""}
+    values 		:=	[]string{""}
+    DeleteApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "devices", deid, "tags", key), jd.Digest, parameters, values, "DELETE")
+}
+
+func DeleteAppTagApi(urlstr string, accesskey string, appid string, key string) {
+	apptoken := GetAppToken(urlstr, accesskey, appid)
+	parameters 		:=	[]string{""}
+	values 			:=	[]string{""}
+	DeleteApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "apps", appid,"tags",key), apptoken, parameters, values, "DELETE")
 }
 
 func DeleteApi(urlstr string, key string, parameters []string, values []string, method string) {

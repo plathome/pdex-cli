@@ -18,6 +18,8 @@ func ListCmd() cli.Command {
 		subCmdChannels(),
 		subCmdApps(),
 		subCmdDgTagKey(),
+		subCmdDevicesTagKey(),
+		subCmdAppsTagKey(),
 	}
 	return command
 }
@@ -97,5 +99,51 @@ func subCmdDgTagKey() cli.Command {
 			},
 		},
 		Action:      subcmd.ListDgTagKey,
+	}
+}
+
+func subCmdDevicesTagKey() cli.Command {
+	return cli.Command{
+		Name:        "de-tags",
+		Description: "get tag list of device",
+		Usage:       "list de-tags --deid DEVICE-ID",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid",
+				Value:       "",
+				Usage:       "list de-tags --deid DEVICE-ID",
+				Destination: &subcmd.FlagDeviceId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "list de-tags --deid DEVICE-ID --key KEY",
+				Destination: &subcmd.FlagKey,
+			},
+		},
+		Action:      subcmd.ListDeviceTagKey,
+	}
+}
+
+func subCmdAppsTagKey() cli.Command {
+	return cli.Command{
+		Name:        "app-tags",
+		Description: "get tag list of application",
+		Usage:       "list app-tags --app-id APP-ID",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "app-id",
+				Value:       "",
+				Usage:       "list app-tags --app-id APP-ID",
+				Destination: &subcmd.FlagAppId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "list app-tags --app-id APP-ID --key KEY",
+				Destination: &subcmd.FlagKey,
+			},
+		},
+		Action:      subcmd.ListAppTagKey,
 	}
 }
