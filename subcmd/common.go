@@ -42,6 +42,8 @@ var (
 	FlagCurrentPassword	string
 	FlagNewPassword		string
 	FlagConfirmation 	string
+	FlagKey 			string
+	FlagValue 			string
 )
 
 func GetUtils(urlstr string) (string, error) {
@@ -347,6 +349,24 @@ func ShowMeApi(urlstr string, accesstoken string) {
 	fmt.Printf("%v\n", string(data))
 }
 
+func ListAppsApi(baseurl string, urlstr string, accesskey string, appid string) {
+	apptoken := GetAppToken(baseurl, accesskey, appid)
+	ListApi(urlstr, apptoken)
+}
+
+func ListDevicesApi(baseurl string, urlstr string, accesskey string, deid string) {
+	dgparts 		:= strings.Split(deid,".")
+	devicegroup  	:= dgparts[0] + "." + dgparts[1]
+	secretkey 		:= GetSecretKey(baseurl + "/devicegroups/" + devicegroup , accesskey)
+	digestdata, err := Hmac(baseurl, []string{"key","message"} , []string{secretkey, deid} )
+	jd := new(DigestData)
+    err = json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+	ListApi(urlstr, jd.Digest)
+}
+
 func ListApi(urlstr string, accesstoken string) {
 	v := url.Values{}
 	s := v.Encode()
@@ -406,6 +426,58 @@ func CreateUserApi(urlstr string, accesstoken string, username string, password 
 func UpdatePasswordApi(urlstr string, accesstoken string, current_password string, new_password string) {
    parameters 	:=	[]string{"current_password", "new_password"}
    values 		:=	[]string{current_password, new_password}
+   v := url.Values{}
+   for i := range parameters {
+   	v.Set(parameters[i], values[i])
+   }
+   s := v.Encode()
+   req, err := http.NewRequest("PUT", urlstr, strings.NewReader(s))
+   if err != nil {
+   	fmt.Printf("http.NewRequest() error: %v\n", err)
+   	return
+   }
+   req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+   req.Header.Add("Authorization", "Bearer " + accesstoken)
+   c := &http.Client{}
+   resp, err := c.Do(req)
+   if err != nil {
+   	fmt.Printf("http.Do() error: %v\n", err)
+   	return
+   }
+   defer resp.Body.Close()
+   data, err := ioutil.ReadAll(resp.Body)
+   if err != nil {
+   	fmt.Printf("error: %v\n", err)
+   	return
+   }
+   fmt.Printf("%v\n", string(data))
+}
+
+func UpdateDeviceTapApi(baseurl string, accesskey string, deid string, tagkey string, value string) {
+	parameters 		:=	[]string{"value"}
+	values 			:=	[]string{value}
+	dgparts 		:= 	strings.Split(deid,".")
+	devicegroup 	:= 	dgparts[0] + "." + dgparts[1]
+	secretkey 		:= 	GetSecretKey(baseurl + "/devicegroups/" + devicegroup , accesskey)
+	digestdata, err := Hmac(baseurl, []string{"key","message"} , []string{secretkey, deid} )
+	jd 				:= new(DigestData)
+    err 			= json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+    updatestr		:= fmt.Sprintf("%s/%s/%s/%s/%s",baseurl,"devices",deid,"tags",tagkey)
+	UpdateTagApi(updatestr, jd.Digest, parameters, values)
+}
+
+func UpdateAppTagApi(baseurl string, accesskey string, appid string, tagkey string, value string) {
+	parameters 	:=	[]string{"value"}
+	values 		:=	[]string{value}
+	apptoken 	:= 	GetAppToken(baseurl, accesskey, appid)
+	updatestr 	:= 	fmt.Sprintf("%s/%s/%s/%s/%s",baseurl,"apps",appid,"tags",tagkey)
+	UpdateTagApi(updatestr, apptoken, parameters, values)
+}
+
+func UpdateTagApi(urlstr string, accesstoken string, parameters []string, values []string) {
    v := url.Values{}
    for i := range parameters {
    	v.Set(parameters[i], values[i])
@@ -513,15 +585,38 @@ func ListApiReturn(urlstr string, accesstoken string) (body string) {
 	return string(data)
 }
 
+func CreateDeviceTagsApi(urlstr string, deid string, accesskey string, key string, value string) {
+	dgparts := strings.Split(deid,".")
+	devicegroup  := dgparts[0] + "." + dgparts[1]
+	secretkey := GetSecretKey(urlstr + "/devicegroups/" + devicegroup , accesskey)
+	digestdata, err := Hmac(urlstr, []string{"key","message"} , []string{secretkey, deid} )
+	jd := new(DigestData)
+    err = json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+	CreateApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "devices", deid, "tags", key) , jd.Digest,  "value", value)
+}
+
+func CreateAppTagsApi(urlstr string, appid string, accesskey string, key string, value string) {
+	apptoken := GetAppToken(urlstr, accesskey, appid)
+	CreateApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "apps", appid, "tags", key) , apptoken,  "value", value)
+}
+
 func CreateApi(urlstr string, accesskey string, key string, value string) {
-	v := url.Values{}
+	parameters 	:= []string{"value"}
+	values 		:= []string{value}
+	v 			:= url.Values{}
+	for i := range parameters {
+		v.Set(parameters[i], values[i])
+	}
 	s := v.Encode()
-	v.Add(key, value)
 	req, err := http.NewRequest("POST", urlstr, strings.NewReader(s))
 	if err != nil {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
 	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 	req.Header.Add("Authorization", "Bearer " + accesskey)
 
 	c := &http.Client{}
@@ -599,7 +694,6 @@ func ReadCommandsApi(urlstr string, deid string, accesstoken string, commandstr 
 	fmt.Printf("%v\n", string(data))
 }
 
-//curl -w "\n" -H "AUTHORIZATION: Bearer c15722ed5cdb" -X DELETE http://localhost:9292/api/v1/me?confirm=true
 func DeleteAccountTask(urlstr string, accesskey string, confirm string) {
 	parameters 		:=	[]string{"confirm"}
 	values 			:=	[]string{confirm}
@@ -627,6 +721,28 @@ func DeleteChannelTask(urlstr string, accesskey string, deid string, channelid s
 	} else {
 		fmt.Println("Please provide true for delete confirmation")
 	}
+}
+
+func DeleteDeviceTagApi(urlstr string, deid string, accesskey string, key string) {
+	dgparts := strings.Split(deid,".")
+	devicegroup  := dgparts[0] + "." + dgparts[1]
+	secretkey := GetSecretKey(urlstr + "/devicegroups/" + devicegroup , accesskey)
+	digestdata, err := Hmac(urlstr, []string{"key","message"} , []string{secretkey, deid} )
+	jd := new(DigestData)
+    err = json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+    parameters 	:=	[]string{""}
+    values 		:=	[]string{""}
+    DeleteApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "devices", deid, "tags", key), jd.Digest, parameters, values, "DELETE")
+}
+
+func DeleteAppTagApi(urlstr string, accesskey string, appid string, key string) {
+	apptoken := GetAppToken(urlstr, accesskey, appid)
+	parameters 		:=	[]string{""}
+	values 			:=	[]string{""}
+	DeleteApi(fmt.Sprintf("%s/%s/%s/%s/%s", urlstr, "apps", appid,"tags",key), apptoken, parameters, values, "DELETE")
 }
 
 func DeleteApi(urlstr string, key string, parameters []string, values []string, method string) {

@@ -19,6 +19,9 @@ func CreateCmd() cli.Command {
 		subCmdCreateChannel(),
 		subCmdCreateSession(),
 		subCmdCreateUser(),
+		subCmdCreateDgTags(),
+		subCmdCreateDeviceTags(),
+		subCmdCreateAppTags(),
 	}
 	return command
 }
@@ -137,5 +140,92 @@ func subCmdCreateUser() cli.Command {
 			},
 		},
 		Action:			subcmd.CreateUser,
+	}
+}
+
+func subCmdCreateDgTags() cli.Command {
+	return cli.Command {
+		Name:			"dg-tags",
+		Description:	"create new devicegroup tags",
+		Usage:			"create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid-prefix",
+				Value:       "",
+				Usage:       "create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagDeviceGroup,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.CreateDgTags,
+	}
+}
+
+func subCmdCreateDeviceTags() cli.Command {
+	return cli.Command {
+		Name:			"de-tags",
+		Description:	"create new device tags",
+		Usage:			"create de-tags --deid DEVICE-ID --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid",
+				Value:       "",
+				Usage:       "create device-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagDeviceId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "create device-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "create device-tags --deid DEVICE-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.CreateDeviceTags,
+	}
+}
+
+func subCmdCreateAppTags() cli.Command {
+	return cli.Command {
+		Name:			"app-tags",
+		Description:	"create new app tags",
+		Usage:			"create app-tags --app-id APP-ID --key KEY --value VALUE",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "app-id",
+				Value:       "",
+				Usage:       "create ap-tags --app-id APP-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagAppId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "create app-tags --app-id APP-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagKey,
+			},
+			cli.StringFlag{
+				Name:        "value",
+				Value:       "",
+				Usage:       "create app-tags --app-id APP-ID --key KEY --value VALUE",
+				Destination: &subcmd.FlagValue,
+			},
+		},
+		Action:			subcmd.CreateAppTags,
 	}
 }

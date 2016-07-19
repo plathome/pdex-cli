@@ -14,6 +14,9 @@ func DeleteCmd() cli.Command {
 	command.Subcommands = []cli.Command{
 		subCmdDeleteChannel(),
 		subCmdDeleteAccount(),
+		subCmdDeleteDgTagKey(),
+		subCmdDeleteDeviceTagKey(),
+		subCmdDeleteAppTagKey(),
 	}
 	return command
 }
@@ -63,5 +66,74 @@ func subCmdDeleteAccount() cli.Command {
 			},
 		},
 		Action:      	subcmd.DeleteAccount,
+	}
+}
+
+func subCmdDeleteDgTagKey() cli.Command {
+	return cli.Command{
+		Name:        "dg-tags",
+		Description: "delete tag key of devicegroup",
+		Usage:       "delete dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid-prefix",
+				Value:       "",
+				Usage:       "delete dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY",
+				Destination: &subcmd.FlagDeviceGroup,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "delete dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY",
+				Destination: &subcmd.FlagKey,
+			},
+		},
+		Action:      subcmd.DeleteDgTagKey,
+	}
+}
+
+func subCmdDeleteDeviceTagKey() cli.Command {
+	return cli.Command{
+		Name:        "de-tags",
+		Description: "delete tag key of device",
+		Usage:       "delete de-tags --deid DEVICE-ID --key KEY",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "deid",
+				Value:       "",
+				Usage:       "delete de-tags --deid DEVICE-ID --key KEY",
+				Destination: &subcmd.FlagDeviceId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "delete de-tags --deid DEVICE-ID --key KEY",
+				Destination: &subcmd.FlagKey,
+			},
+		},
+		Action:      subcmd.DeleteDeviceTagKey,
+	}
+}
+
+func subCmdDeleteAppTagKey() cli.Command {
+	return cli.Command{
+		Name:        "ap-tags",
+		Description: "delete tag key of app",
+		Usage:       "delete ap-tags --app-id APP-ID --key KEY",
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:        "app-id",
+				Value:       "",
+				Usage:       "delete app-tags --app-id APP-ID --key KEY",
+				Destination: &subcmd.FlagAppId,
+			},
+			cli.StringFlag{
+				Name:        "key",
+				Value:       "",
+				Usage:       "delete app-tags --app-id APP-ID --key KEY",
+				Destination: &subcmd.FlagKey,
+			},
+		},
+		Action:      subcmd.DeleteApppTagKey,
 	}
 }

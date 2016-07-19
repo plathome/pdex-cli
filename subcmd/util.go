@@ -87,3 +87,54 @@ func DeleteAccount(context *cli.Context) error {
 	}
 	return nil
 }
+
+func DeleteDgTagKey(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the Delete DeviceGroup tag context \n")
+		os.Exit(1)
+	}
+	if FlagDeviceGroup != "" && FlagKey != "" {
+		parameters 		:=	[]string{""}
+		values 			:=	[]string{""}
+		DeleteApi(fmt.Sprintf("%s/%s/%s/%s/%s", conf.PdexUrl, "devicegroups", FlagDeviceGroup, "tags", FlagKey), conf.AccessKey, parameters, values, "DELETE")
+	} else {
+		fmt.Println("pdex delete dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY")
+		return nil
+	}
+	return nil
+}
+
+func DeleteDeviceTagKey(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the Delete Device Tag context \n")
+		os.Exit(1)
+	}
+	if FlagDeviceId != "" && FlagKey != "" {
+		DeleteDeviceTagApi(conf.PdexUrl, FlagDeviceId, conf.AccessKey, FlagKey)
+	} else {
+		fmt.Println("pdex delete de-tags --deid DEVICE-ID --key KEY")
+		return nil
+	}
+	return nil
+}
+
+func DeleteApppTagKey(context *cli.Context) error {
+	SetActingProfile()
+	conf, err := ReadConfigs()
+	if err != nil {
+		fmt.Println(os.Stderr, "error in the Delete Application Tag context \n")
+		os.Exit(1)
+	}
+	if FlagAppId != "" && FlagKey != "" {
+		DeleteAppTagApi(conf.PdexUrl, conf.AccessKey, FlagAppId,  FlagKey)
+	} else {
+		fmt.Println("pdex delete ap-tags --app-id APP-ID --key KEY")
+		return nil
+	}
+	return nil
+}
+
