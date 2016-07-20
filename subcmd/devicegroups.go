@@ -83,7 +83,8 @@ func UpdateApp(context *cli.Context) error {
 		fmt.Println("update apps --app-name-suffix APP-NAME-SIFFIX --app-id APPID")
 		return nil
 	} else {
-		UpdateAppApi(fmt.Sprintf("%s/%s/%s",conf.PdexUrl,"apps",FlagAppId), conf.AccessKey, FlagAppNameSuffix)
+		apiurlstr := fmt.Sprintf("%s/%s/%s",conf.PdexUrl,"apps",FlagAppId)
+		UpdateAppApi(apiurlstr, conf.AccessKey, FlagAppNameSuffix)
 	}
 	return nil
 }
@@ -162,7 +163,8 @@ func CreateDgTags(context *cli.Context) error {
 		os.Exit(1)
 	}
 	if FlagKey != "" && FlagValue != "" && FlagDeviceGroup != "" {
-		CreateApi(fmt.Sprintf("%s/%s/%s/%s/%s", conf.PdexUrl, "devicegroups", FlagDeviceGroup, "tags", FlagKey) , conf.AccessKey,  "value", FlagValue)
+		apiurlstr := fmt.Sprintf("%s/%s/%s/%s/%s", conf.PdexUrl, "devicegroups", FlagDeviceGroup, "tags", FlagKey)
+		CreateApi(apiurlstr, conf.AccessKey,  "value", FlagValue)
 	} else {
 		fmt.Println("create dg-tags --deid-prefix DEVICE-ID-PREFIX --key KEY --value VALUE")
 	}

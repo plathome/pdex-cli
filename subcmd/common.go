@@ -518,7 +518,7 @@ func UpdateAppApi(urlstr string, accesstoken string, appnamesuffix string) {
    	fmt.Printf("http.NewRequest() error: %v\n", err)
    	return
    }
-   req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+   req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=app_name_suffix")
    req.Header.Add("Authorization", "Bearer " + accesstoken)
    c := &http.Client{}
    resp, err := c.Do(req)
@@ -604,7 +604,7 @@ func CreateAppTagsApi(urlstr string, appid string, accesskey string, key string,
 }
 
 func CreateApi(urlstr string, accesskey string, key string, value string) {
-	parameters 	:= []string{"value"}
+	parameters 	:= []string{key}
 	values 		:= []string{value}
 	v 			:= url.Values{}
 	for i := range parameters {
@@ -616,7 +616,7 @@ func CreateApi(urlstr string, accesskey string, key string, value string) {
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=" + key )
 	req.Header.Add("Authorization", "Bearer " + accesskey)
 
 	c := &http.Client{}

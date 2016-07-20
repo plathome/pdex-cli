@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/urfave/cli"
 	"os"
-	"github.com/plathome/pdex-cli/cmd"
-//	"./cmd"
+//	"github.com/plathome/pdex-cli/cmd"
+	"./cmd"
 )
 
 func main() {

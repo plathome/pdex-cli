@@ -155,4 +155,42 @@ read_commands_bulk() {
 
 # create after delete and send message then read message
 
-#
+# devicegroup tag create
+
+# devicegroup tag list after create
+
+# devicegroup tag update
+
+# devicegroup tag list after update
+
+# devicegroup tag delete
+
+# device tag list after delete
+
+# device tag create
+
+# device tag list after create
+
+# device tag update
+
+# device tag list after update
+
+# device tag delete
+
+# device tag list after delete
+
+
+# app tag create
+
+# app tag list after create
+
+# app tag update
+
+# app tag list after update
+
+# app tag delete
+
+# app tag list after delete
+
+
+
