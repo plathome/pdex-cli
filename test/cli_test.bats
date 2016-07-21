@@ -15,46 +15,45 @@ load test_helper
 # Create API list
 
 @test "create app" {
-  run $pdex cr apps --app-name-suffix "test-app-1"
-  [[ $output == *"app_id"* ]]
+  create_app
+  [[ $APPRESULT == *"app_id"* ]]
 }
 
 @test "create device" {
-  run $pdex cr dg | jq .deid_prefix
-  run $pdex cr devices --deid-prefix $output
-  [[ $output == *"deid"* ]]
+  create_device
+  [[ $DERESULT == *"deid"* ]]
 }
 
 @test "create devicegroup" {
-  run $pdex cr dg
-  [[ $output == *"deid_prefix"* ]]
+  create_dg
+  [[ $DGRESULT == *"deid_prefix"* ]]
 }
 
 @test "create channels" {
   create_channel
-  [[ $CH == *"channel_id"* ]]
+  [[ $CHRESULT == *"channel_id"* ]]
 }
 
 # Listing API
 
 @test "list apps" {
   list_apps
-  [[ $LIST -ge 1 ]]
+  [[ $APPLIST -ge 1 ]]
 }
 
 @test "list devicegroups" {
   list_dgs
-  [[ $LIST -ge 1 ]]
+  [[ $LISTDG -ge 1 ]]
 }
 
 @test "list devices" {
   list_devices
-  [[ $LIST -eq 1 ]]
+  [[ $DELIST -eq 1 ]]
 }
 
 @test "list channels" {
   list_channel
-  [[ $LIST -eq 1 ]]
+  [[ $LISTCH -eq 1 ]]
 }
 
 # Show API
@@ -73,16 +72,6 @@ load test_helper
 @test "send message" {
   send_message
   [[ $XFER == *"transaction_id"* ]]
-}
-
-@test "read messages" {
-  read_message
-  [[ $READ -eq 1 ]]
-}
-
-@test "read single message" {
-  read_single_message
-  [[ $READ == "message send for test" ]]
 }
 
 @test "send command" {
@@ -108,4 +97,87 @@ load test_helper
 @test "sending bulk messages and then read" {
   read_messages_bulk
   [[ $READ -eq 10 ]]
+}
+
+@test "read messages" {
+  read_message
+  [[ $READ -eq 1 ]]
+}
+
+@test "read single message" {
+  read_single_message
+  [[ $READ == "message send for test" ]]
+}
+
+@test "update app" {
+  app_name_change
+  [[ $UPDATEAPP == *"updated"* ]]
+}
+
+@test "close channel" {
+  delete_channel
+  [[ $CLOSECH == *"channel_id"* ]]
+  [[ $CLOSECHAGAIN == *"Channel not found"* ]]
+}
+
+@test "create device tags" {
+  create_device_tags
+  [[ $DETAGS == *"VX-1"* ]]
+}
+
+@test "list-up device tags" {
+  list_device_tags
+  [[ $DELIST == *"VX-1"* ]]
+}
+
+@test "update device tags" {
+  update_device_tags
+  [[ $DELIST == *"BX-1"* ]]
+}
+
+@test "delete device tag" {
+  delete_device_tags
+  [[ $DELIST == *"[]"* ]]
+}
+
+@test "create dg tags" {
+  create_devicegroups_tags
+  [[ $DGTAGS == *"OpenBlocks"* ]]
+}
+
+@test "list up the dg tags" {
+  list_devicegroups_tags
+  [[ $DGTAGSLIST == *"OpenBlocks"* ]]
+}
+
+@test "update the dg tags" {
+  update_devicegroups_tags
+  [[ $DGTAGSLIST == *"OpenBlocksNext"* ]]
+}
+
+@test "delete devicegroup tag" {
+  delete_devicegroups_tags
+  echo $DGTAGSLIST
+  [[ $DGTAGSLIST == *"[]"* ]]
+}
+
+@test "create app tag" {
+  create_app_tags
+  [[ $APPTAGS == *"plc"* ]]
+}
+
+@test "list app tag" {
+  list_app_tags
+  [[ $APPTAGS == *"plc"* ]]
+}
+
+@test "update the app tag" {
+  update_app_tags
+  [[ $APPLIST == *"humidity"* ]]
+}
+
+@test "delete app tag" {
+  delete_app_tags
+  echo $APPLIST
+  [[ $APPLIST == *"[]"* ]]
 }

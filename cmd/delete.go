@@ -117,9 +117,9 @@ func subCmdDeleteDeviceTagKey() cli.Command {
 
 func subCmdDeleteAppTagKey() cli.Command {
 	return cli.Command{
-		Name:        "ap-tags",
+		Name:        "app-tags",
 		Description: "delete tag key of app",
-		Usage:       "delete ap-tags --app-id APP-ID --key KEY",
+		Usage:       "delete app-tags --app-id APP-ID --key KEY",
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:        "app-id",
