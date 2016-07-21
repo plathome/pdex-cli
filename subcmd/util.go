@@ -132,7 +132,7 @@ func DeleteApppTagKey(context *cli.Context) error {
 	if FlagAppId != "" && FlagKey != "" {
 		DeleteAppTagApi(conf.PdexUrl, conf.AccessKey, FlagAppId,  FlagKey)
 	} else {
-		fmt.Println("pdex delete ap-tags --app-id APP-ID --key KEY")
+		fmt.Println("pdex delete app-tags --app-id APP-ID --key KEY")
 		return nil
 	}
 	return nil

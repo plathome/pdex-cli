@@ -8,40 +8,52 @@ setup() {
 
 # assign the device group
 create_dg() {
-	DG=$(pdex cr dg | jq .deid_prefix)
+	DGRESULT=$(pdex cr dg)
+	DG=$(echo $DGRESULT | jq .deid_prefix)
 }
 
 # lust devicegroups
 list_dgs() {
 	create_dg
 	CMD="pdex ls dg"
-	LIST=$(eval $CMD | jq .count)
+	LISTDG=$(eval $CMD | jq .count)
 }
 
 # create device
 create_device() {
 	create_dg
 	CMD="pdex cr devices --deid-prefix $DG"
-	DE=$(eval $CMD | jq .deid)
+	DERESULT=$(eval $CMD)
+	DE=$(echo $DERESULT | jq .deid)
 }
 
 # list devices
 list_devices() {
 	create_channel
 	CMD="pdex ls de --deid-prefix $DG"
-	LIST=$(eval $CMD | jq .count)
+	DELISTRESULT=$(eval $CMD)
+	DELIST=$(echo $DELISTRESULT | jq .count)
 }
 
 # create app
 create_app() {
-	APP=$(pdex cr apps --app-name-suffix 'test-create-channel' | jq .app_id)
+	sleep 1
+	TAG=$(awk -v min=1 -v max=99999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
+	TIME=$(($(date +'%s * 1000 + %-N / 1000000')))
+	CMD="pdex cr apps --app-name-suffix $TAG-$TIME"
+#	echo CMD
+	APPRESULT=$(eval $CMD)
+#	echo $APPRESULT
+#	echo $CMD
+	APP=$(echo $APPRESULT | jq .app_id)
 }
 
 # list app
 list_apps() {
 	create_app
 	CMD="pdex ls apps"
-	LIST=$(eval $CMD | jq .count)
+	APPLISTRESULT=$(eval $CMD)
+	APPLIST=$(echo $APPLISTRESULT | jq .count)
 }
 
 # create channel
@@ -49,15 +61,16 @@ create_channel() {
 	create_device
 	create_app
 	CMD="pdex cr ch --deid $DE --app-id $APP"
-	CHID=$(eval $CMD | jq .channel_id)
-	CH=$(eval $CMD)
+	CHRESULT=$(eval $CMD)
+	CHID=$(echo $CHRESULT | jq .channel_id)
 }
 
 # list channel
 list_channel() {
 	create_channel
 	CMD="pdex ls ch --deid $DE"
-	LIST=$(eval $CMD | jq .count)
+	LISTCHRESULT=$(eval $CMD)
+	LISTCH=$(echo $LISTCHRESULT | jq .count)
 }
 
 # send message
@@ -71,8 +84,9 @@ send_message() {
 read_message() {
 	send_message
 	CMD="pdex read msg --app-id $APP"
-	READ=$(eval $CMD | jq .count)
-	MSGID=$(eval $CMD | jq '.messages[0].msgid')
+	READRESULT=$(eval $CMD)
+	READ=$(echo $READRESULT | jq .count)
+	MSGID=$(echo $READRESULT | jq '.messages[0].msgid')
 }
 
 # Read single message
@@ -93,8 +107,9 @@ send_command() {
 read_command() {
 	send_command
 	CMD="pdex read cmd --deid $DE"
-	READ=$(eval $CMD | jq .count)
-	CMDID=$(eval $CMD | jq '.commands[0].cmdid')
+	READCMDRESULT=$(eval $CMD)
+	READ=$(echo $READCMDRESULT | jq .count)
+	CMDID=$(echo $READCMDRESULT | jq '.commands[0].cmdid')
 }
 
 # command contetnt check
@@ -150,47 +165,126 @@ read_commands_bulk() {
 }
 
 # app name change
+app_name_change() {
+	create_app
+	sleep 1
+	TAG=$(awk -v min=1 -v max=99999 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')
+	TIME=$(($(date +'%s * 1000 + %-N / 1000000')))
+	CMD="pdex up apps --app-id $APP --app-name-suffix  updated-$TAG-$TIME"
+	UPDATEAPP=$(eval $CMD)
+}
 
 # delete channel
+delete_channel() {
+	create_channel
+	CMD="pdex delete ch --channel-id $CHID --deid $DE --confirm true"
+	CLOSECH=$(eval $CMD)
+	CLOSECHAGAIN=$(eval $CMD)
+
+}
 
 # create after delete and send message then read message
+channel_create_after_delete() {
+ 	create_channel
+ 	delete_channel
+ 	read_command
+}
 
 # devicegroup tag create
+create_devicegroups_tags() {
+	create_dg
+	CMD="pdex cr dg-tags --deid-prefix $DG --key DGROUP --value OpenBlocks"
+	DGTAGS=$(eval $CMD)
+}
 
 # devicegroup tag list after create
+list_devicegroups_tags() {
+	create_devicegroups_tags
+	CMD="pdex ls dg-tags --deid-prefix $DG"
+	DGTAGSLIST=$(eval $CMD)
+}
 
 # devicegroup tag update
-
-# devicegroup tag list after update
+update_devicegroups_tags() {
+	create_devicegroups_tags
+	CMD="pdex up dg-tags --deid-prefix $DG --key DGROUP --value OpenBlocksNext"
+	DELIST=$(eval $CMD)
+	CMD="pdex ls dg-tags --deid-prefix $DG"
+	DGTAGSLIST=$(eval $CMD)
+}
 
 # devicegroup tag delete
-
-# device tag list after delete
+delete_devicegroups_tags() {
+	create_devicegroups_tags
+	CMD="pdex delete dg-tags --deid-prefix $DG --key DGROUP"
+	DELIST=$(eval $CMD)
+	CMD="pdex ls dg-tags --deid-prefix $DG"
+	DGTAGSLIST=$(eval $CMD)
+}
 
 # device tag create
+create_device_tags() {
+	create_device
+	create_channel
+	CMD="pdex cr de-tags --deid $DE --key brand --value VX-1"
+	DETAGS=$(eval $CMD)
+}
 
 # device tag list after create
+list_device_tags() {
+	create_device_tags
+	CMD="pdex ls de-tags --deid $DE"
+	DELIST=$(eval $CMD)
+}
 
 # device tag update
-
-# device tag list after update
+update_device_tags() {
+	create_device_tags
+	CMD="pdex up de-tags --deid $DE --key brand --value BX-1"
+	DELIST=$(eval $CMD)
+	CMD="pdex ls de-tags --deid $DE"
+	DELIST=$(eval $CMD)
+}
 
 # device tag delete
-
-# device tag list after delete
-
+delete_device_tags() {
+	create_device_tags
+	CMD="pdex delete de-tags --deid $DE --key brand"
+	DETAG=$(eval $CMD)
+	CMD="pdex ls de-tags --deid $DE"
+	DELIST=$(eval $CMD)
+}
 
 # app tag create
+create_app_tags() {
+	create_app
+	CMD="pdex cr app-tags --app-id $APP --key name --value plc"
+	APPTAG=$(eval $CMD)
+	CMD="pdex ls app-tags --app-id $APP"
+	APPTAGS=$(eval $CMD)
+}
 
 # app tag list after create
-
+list_app_tags() {
+	create_app_tags
+	CMD="pdex ls app-tags --app-id $APP"
+	APPTAGS=$(eval $CMD)
+}
 # app tag update
-
-# app tag list after update
-
+update_app_tags() {
+	create_app_tags
+	CMD="pdex up app-tags --app-id $APP --key name --value humidity"
+	APPLIST=$(eval $CMD)
+	CMD="pdex ls app-tags --app-id $APP"
+	APPLIST=$(eval $CMD)
+}
 # app tag delete
-
-# app tag list after delete
-
-
-
+delete_app_tags() {
+	create_app_tags
+	CMD="pdex delete app-tags --app-id $APP --key name"
+	echo $CMD
+	APPTAG=$(eval $CMD)
+	CMD="pdex ls app-tags --app-id $APP"
+	echo $CMD
+	APPLIST=$(eval $CMD)
+}
