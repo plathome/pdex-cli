@@ -40,6 +40,12 @@ func subCmdReadCommands() cli.Command {
 				Usage:       "read commands --deid=DEVICE_ID --cmdid=COMMAND_ID",
 				Destination: &subcmd.FlagCmdId,
 			},
+			cli.StringFlag{
+				Name:		 "query",
+				Value:		 "",
+				Usage:		 "read commands --deid=DEVICE_ID --query=FILTER_QUERY_STRING",
+				Destination: &subcmd.FlagQuery,
+			},
 		},
 		Action:      subcmd.ReadCommands,
 	}
@@ -85,8 +91,14 @@ func subCmdReadMessages() cli.Command {
 			cli.StringFlag{
 				Name:        "channel-id",
 				Value:       "",
-				Usage:       "read messages --channel-id=CHANNEL_ID --msgid=MSG_ID",
+				Usage:       "read messages --app-id=APP_ID --channel-id=CHANNEL_ID --msgid=MSG_ID",
 				Destination: &subcmd.FlagChannelId,
+			},
+			cli.StringFlag{
+				Name:		 "query",
+				Value:		 "",
+				Usage:		 "read messages --app-id=APP_ID --channel-id=CHANNEL_ID --query=FILTER_QUERY_STRING",
+				Destination: &subcmd.FlagQuery,
 			},
 		},
 		Action:      subcmd.ReadMessages,
