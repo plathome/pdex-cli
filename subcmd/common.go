@@ -44,6 +44,7 @@ var (
 	FlagConfirmation 	string
 	FlagKey 			string
 	FlagValue 			string
+	FlagQuery			string
 )
 
 func GetUtils(urlstr string) (string, error) {
@@ -307,6 +308,37 @@ func ReadLatestMessage(urlstr string, apptoken string) {
 	}
 	req.Header.Add("Authorization", "Bearer " + apptoken)
 
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
+}
+
+func ReadFilteredMessage(urlstr string, apptoken string, filterquery string) {
+	v := url.Values{}
+	queryparts := strings.Split(filterquery, "&")
+	for i := 0; i < len(queryparts); i++ {
+		subparts := strings.Split(queryparts[i],"=")
+		v.Set(subparts[0], subparts[1])
+	}
+	s := v.Encode()
+	req, err := http.NewRequest("GET", urlstr, strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+	req.Header.Add("Authorization", "Bearer " + apptoken)
 	c := &http.Client{}
 	resp, err := c.Do(req)
 	if err != nil {
@@ -678,6 +710,45 @@ func ReadCommandsApi(urlstr string, deid string, accesstoken string, commandstr 
 		fmt.Printf("http.NewRequest() error: %v\n", err)
 		return
 	}
+	req.Header.Add("Authorization", "Bearer " + jd.Digest)
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		fmt.Printf("http.Do() error: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("%v\n", string(data))
+}
+
+func ReadCommandsApiFilter(urlstr string, deid string, accesstoken string, commandstr string, filterquery string) {
+	dgparts := strings.Split(deid,".")
+	devicegroup  := dgparts[0] + "." + dgparts[1]
+	secretkey := GetSecretKey(urlstr + "/devicegroups/" + devicegroup , accesstoken)
+	digestdata, err := Hmac(urlstr, []string{"key","message"} , []string{secretkey, deid} )
+	jd := new(DigestData)
+    err = json.Unmarshal([]byte(digestdata), &jd)
+    if err != nil {
+        fmt.Println(err)
+    }
+	v := url.Values{}
+	queryparts := strings.Split(filterquery, "&")
+	for i := 0; i < len(queryparts); i++ {
+		subparts := strings.Split(queryparts[i],"=")
+		v.Set(subparts[0], subparts[1])
+	}
+	s := v.Encode()
+	req, err := http.NewRequest("GET", urlstr + "/devices/" + deid + "/" + commandstr, strings.NewReader(s))
+	if err != nil {
+		fmt.Printf("http.NewRequest() error: %v\n", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
 	req.Header.Add("Authorization", "Bearer " + jd.Digest)
 	c := &http.Client{}
 	resp, err := c.Do(req)

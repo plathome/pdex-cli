@@ -29,15 +29,19 @@ func ReadCommands(context *cli.Context) error {
 		fmt.Fprint(os.Stderr, "Error: Failed reading config file. \n")
 		os.Exit(1)
 	}
-	if FlagDeviceId == "" && FlagCmdId == "" {
+	if FlagDeviceId == "" && FlagCmdId == "" && FlagQuery == "" {
 		fmt.Println("pdex read commands --deid DEVICE_ID")
+		fmt.Println("pdex read commands --deid DEVICE_ID --query FILTER_QUERY_STRING")
 		fmt.Println("pdex read commands --deid DEVICE_ID --cmdid COMMAND_ID")
 	}
-	if FlagDeviceId != "" && FlagCmdId == "" {
+	if FlagDeviceId != "" && FlagCmdId == "" && FlagQuery == "" {
 		ReadCommandsApi(conf.PdexUrl, FlagDeviceId, conf.AccessKey, "commands")
 	}
-	if FlagDeviceId != "" && FlagCmdId != "" {
+	if FlagDeviceId != "" && FlagCmdId != "" && FlagQuery == "" {
 		ReadCommandsApi(conf.PdexUrl, FlagDeviceId, conf.AccessKey, "commands/" + FlagCmdId)
+	}
+	if FlagDeviceId != "" && FlagCmdId == "" && FlagQuery != "" {
+		ReadCommandsApiFilter(conf.PdexUrl, FlagDeviceId, conf.AccessKey, "commands", FlagQuery)
 	}
 	return nil
 }
