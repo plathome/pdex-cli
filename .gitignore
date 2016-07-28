@@ -3,3 +3,5 @@ pdex*
 bin
 build
 release
+*.db
+node_modules
