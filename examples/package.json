@@ -1,0 +1,15 @@
+{
+  "name": "sensor-scan-pdex",
+  "version": "1.0.0",
+  "description": "Scan sensors using Bluetooth and aggregate data to PD Exchange using cli",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "elias hasnat",
+  "license": "",
+  "devDependencies": {
+    "bleacon": "^0.4.0",
+    "sqlite3": "^3.1.4"
+  }
+}
