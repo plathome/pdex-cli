@@ -4,10 +4,12 @@
 [BLE Sensors]  ----> [pdex-cli app] ---> Pd Exchange
 
 
-## Step 1:
-	configure the pdex-cli
+## Step 1
 
-## Step 2:
+configure the pdex-cli
+
+## Step 2
+
 	### create device group
 	
 	```
