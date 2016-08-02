@@ -5,6 +5,7 @@ var   sqlite3     = require('sqlite3').verbose();
 var   db          = new sqlite3.Database('base.db');
 var   exec        = require('child_process').exec;
 const startedAt   = new Date().getTime()
+var   dateFormat  = require('dateformat');
 const table_name  = 'sensor_master'
 const devicegroup = "01.72da6d"
 const app_id      = "4817e8ee00814e93af7a59c80b8625f9"
@@ -21,8 +22,6 @@ Bleacon.on('discover', (beacon) => {
   const uuid    = beacon.uuid
   const major   = pad(beacon.major.toString(16), 4)
   const minor   = pad(beacon.minor.toString(16), 4)
-  let   info    = `${elapsed}: ${uuid} | ${major} | ${minor} | ${beacon.rssi} | ${beacon.proximity} | ${beacon.accuracy} | ${beacon.measuredPower}`
-  let   message = `'{${elapsed}:${uuid}, major:${major}, minor:${minor}, rssi:${beacon.rssi}, proximity:${beacon.proximity}, accuracy:${beacon.accuracy}, txpower:${beacon.measuredPower}}'`
   const deid    = ""
   const chid    = ""
 
@@ -70,7 +69,11 @@ Bleacon.on('discover', (beacon) => {
             });
           } else {
             db.get('select deid from sensor_master where uuid=$uuid',{ $uuid: uuid }, function (err, res) {
-              let command = `pdex s msg --deid ${res['deid']} `
+              let device_id = `${res['deid']}`
+              let command = `pdex s msg --deid ${device_id} `
+              var now = new Date();
+              var event_time = dateFormat(now, "yyyymmddhhMMss");
+              let message = `'{ time:${event_time}, deid:${device_id}, major:${major}, minor:${minor}, rssi:${beacon.rssi}, proximity:${beacon.proximity}, accuracy:${beacon.accuracy}, txpower:${beacon.measuredPower}}'`
               command += message
               exec(command, function(error, exam, stderr) {
                 console.log(`beacon ${res['deid']} is sending message`)

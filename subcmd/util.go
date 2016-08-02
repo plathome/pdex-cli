@@ -65,7 +65,7 @@ func DeleteChannel(context *cli.Context) error {
 		os.Exit(1)
 	}
 	if FlagDeviceId == "" || FlagChannelId == "" || FlagConfirmation == "" {
-		fmt.Println("pdex delete channels --deid DEVICE-ID --app-id APP-ID --confirm true/false")
+		fmt.Println("pdex delete channels --deid DEVICE-ID --channel-id CHANNEL-ID --confirm true/false")
 	}
 	if FlagChannelId != "" && FlagDeviceId != "" && FlagConfirmation != "" {
 		DeleteChannelTask(conf.PdexUrl, conf.AccessKey, FlagDeviceId, FlagChannelId, FlagConfirmation)
