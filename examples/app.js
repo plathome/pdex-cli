@@ -7,8 +7,8 @@ var   exec        = require('child_process').exec;
 const startedAt   = new Date().getTime()
 var   dateFormat  = require('dateformat');
 const table_name  = 'sensor_master'
-const devicegroup = "01.72da6d"
-const app_id      = "4817e8ee00814e93af7a59c80b8625f9"
+const devicegroup = "01.fc6b44"
+const app_id      = "9bbfc362a7784c769a5be1bf23647146"
 
 function pad(str, len) {
   while (str.length < len) {
@@ -72,11 +72,16 @@ Bleacon.on('discover', (beacon) => {
               let device_id = `${res['deid']}`
               let command = `pdex s msg --deid ${device_id} `
               var now = new Date();
-              var event_time = dateFormat(now, "yyyymmddhhMMss");
+              var event_time = dateFormat(now, "yyyymmddHHMMss");
               let message = `'{ time:${event_time}, deid:${device_id}, major:${major}, minor:${minor}, rssi:${beacon.rssi}, proximity:${beacon.proximity}, accuracy:${beacon.accuracy}, txpower:${beacon.measuredPower}}'`
               command += message
               exec(command, function(error, exam, stderr) {
-                console.log(`beacon ${res['deid']} is sending message`)
+                if(exam.indexOf("error") > -1) {
+                  console.log(`error in the server-side : ${res['deid']} `)
+                } else {
+                  console.log(`beacon ${res['deid']} is sending message`)
+                }
+
                 if (error !== null) {
                     console.log('exec error: ' + error);
                 }

@@ -455,6 +455,44 @@ func CreateUserApi(urlstr string, accesstoken string, username string, password 
    fmt.Printf("%v\n", string(data))
 }
 
+func UserAccessKeyApi(urlstr string, username string, password string) (body string) {
+   parameters 	:=	[]string{"username", "password"}
+   values 		:=	[]string{username, password}
+   v := url.Values{}
+   for i := range parameters {
+   	v.Set(parameters[i], values[i])
+   }
+   s := v.Encode()
+   req, err := http.NewRequest("POST", urlstr, strings.NewReader(s))
+   if err != nil {
+   	fmt.Printf("http.NewRequest() error: %v\n", err)
+   	return
+   }
+   req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+   c := &http.Client{}
+   resp, err := c.Do(req)
+   if err != nil {
+   	fmt.Printf("http.Do() error: %v\n", err)
+   	return "error"
+   }
+   defer resp.Body.Close()
+   data, err := ioutil.ReadAll(resp.Body)
+   if err != nil {
+   	fmt.Printf("error: %v\n", err)
+   	return
+   }
+
+   var accesskey map[string]interface{}
+   json.Unmarshal(data, &accesskey)
+   key, _ := accesskey["access_token"].(string)
+
+   if key == "" {
+   		key = "error"
+   }
+
+   return key
+}
+
 func UpdatePasswordApi(urlstr string, accesstoken string, current_password string, new_password string) {
    parameters 	:=	[]string{"current_password", "new_password"}
    values 		:=	[]string{current_password, new_password}
