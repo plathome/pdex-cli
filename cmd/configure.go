@@ -32,11 +32,23 @@ func subCmdConfigure() cli.Command {
 				Usage:       "configure set --url API_END_POINT",
 				Destination: &subcmd.FlagUrl,
 			},
-			cli.StringFlag{
+			cli.StringFlag {
 				Name:        "access-key",
 				Value:       "",
 				Usage:       "configure set --access-key ACCESS_KEY",
 				Destination: &subcmd.FlagAccessKey,
+			},
+			cli.StringFlag {
+				Name:        "username",
+				Value:       "",
+				Usage:       "configure set --url API_END_POINT --username USER_NAME --password PASS_WORD",
+				Destination: &subcmd.FlagUsername,
+			},
+			cli.StringFlag {
+				Name:        "password",
+				Value:       "",
+				Usage:       "configure set --url API_END_POINT --username USER_NAME --password PASS_WORD",
+				Destination: &subcmd.FlagPassword,
 			},
 		},
 		Action:      subcmd.ConfigureCommands,
@@ -66,6 +78,18 @@ func subCmdConfigureProfile() cli.Command {
 				Value:       "",
 				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT --access-key ACCESS_KEY",
 				Destination: &subcmd.FlagAccessKey,
+			},
+			cli.StringFlag {
+				Name:        "username",
+				Value:       "",
+				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT --username USER_NAME --password PASS_WORD",
+				Destination: &subcmd.FlagUsername,
+			},
+			cli.StringFlag {
+				Name:        "password",
+				Value:       "",
+				Usage:       "configure profile --name PROFILE_NAME --url API_END_POINT --username USER_NAME --password PASS_WORD",
+				Destination: &subcmd.FlagPassword,
 			},
 		},
 		Action:      subcmd.ConfigureCommandsProfile,
